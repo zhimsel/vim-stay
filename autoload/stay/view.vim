@@ -46,7 +46,7 @@ endfunction
 function! s:gotowin(winnr) abort
   let l:curwinnr = winnr()
   if a:winnr isnot l:curwinnr
-    execute 'silent!' a:winnr.'wincmd w'
+    execute 'noautocmd keepjumps keepalt silent!' a:winnr.'wincmd w'
   endif
   return l:curwinnr
 endfunction
