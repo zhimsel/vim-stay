@@ -20,7 +20,7 @@ Recommended: `set viewoptions=cursor,folds,slash,unix`. Edit as usual. See the [
 
 ### Rationale
 
-Keeping editing session state should be a given in an editor; unluckily, Vim's solution for this, *view sessions*, are not easily automated [without encountering painful bumps][mkview-wikia]. As the one plug-in I found that aims to fix this, Zhou Yi Chao’s [*restore_view.vim*][chao-plugin], limits itself to Vim sessions and as I found its buffer name based heuristics rather error prone, I wrote my own.
+Keeping editing session state should be a given in an editor; unluckily, Vim's solution for this, *view sessions*, are not easily automated [without encountering painful bumps][mkview-wikia]. As the one plug-in I found that aims to fix this, Zhou Yi Chao’s [*restore_view.vim*][chao-plugin], limits itself to Vim sessions, doesn’t play well with other position setting plug-ins like my own [vim-fetch][vim-fetch] and as I found its buffer name based heuristics rather error prone, I wrote my own.
 
 ### License
 
@@ -36,4 +36,5 @@ Keeping editing session state should be a given in an editor; unluckily, Vim's s
 [license]:       LICENSE.md
 [mkview-wikia]:  http://vim.wikia.com/wiki/Make_views_automatic
 [releases]:      https://github.com/kopischke/vim-stay/releases
+[vim-fetch]:     http://www.vim.org/scripts/script.php?script_id=5089
 [vimscripts]:    http://www.vim.org/scripts/script.php?script_id=5099
