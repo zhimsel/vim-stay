@@ -58,7 +58,7 @@ INTEGRATION WITH 3RD PARTY PLUG-INS:
 
 Out of the box, vim-stay integrates with the following plug-ins:
 
-1. vim-stay	http://www.vim.org/scripts/script.php?script_id=5089
+1. vim-fetch	http://www.vim.org/scripts/script.php?script_id=5089
 
 If you'd like vim-stay to integrate with other position-setting plug-ins, open
 an issue or a PR at

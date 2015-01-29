@@ -4,7 +4,7 @@ let s:cpo = &cpo
 set cpo&vim
 
 " Make a persistent view for window {winnr}:
-" @signature:  stay#mkview({winnr:Number})
+" @signature:  stay#view#make({winnr:Number})
 " @returns:    Boolean
 function! stay#view#make(winnr) abort
   if a:winnr is -1
@@ -25,7 +25,7 @@ function! stay#view#make(winnr) abort
 endfunction
 
 " Load a persistent view for window {winnr}:
-" @signature:  stay#loadview({winnr:Number})
+" @signature:  stay#view#load({winnr:Number})
 " @returns:    Boolean
 function! stay#view#load(winnr) abort
   if a:winnr is -1
