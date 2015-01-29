@@ -1,0 +1,158 @@
+*vim-stay.txt*        For Vim version 7.0 or better          version 1.0.0
+
+
+		VIM REFERENCE for the Stay plug-in
+
+
+Never lose your place in a buffer again	    	*vim-stay*
+
+1. Introduction				|vim-stay-introduction|
+2. Usage				|vim-stay-configuration|
+3. Position specifications		|vim-stay-integration|
+4. Troubleshooting			|vim-stay-troubleshooting|
+5. Credits and license			|vim-stay-credits-license|
+
+{not available when |'compatible'| is set}
+
+==============================================================================
+1. Introduction					*vim-stay-introduction*
+
+vim-stay adds automated |View| creation and restoration whenever editing
+a buffer, across Vim and buffer editing sessions. It also alleviates Vim's
+tendency to lose view state when cycling through buffers (via |argdo|, |bufdo|
+et al.). It is smart about which buffers should be persisted and which should
+not, making the procedure painless and invisible.
+
+==============================================================================
+2. Configuration				*vim-stay-configuration*
+
+
+VIEW SESSION CONFIGURATION:			*vim-stay-viewoptions*
+
+The following, non-standard 'viewoptions' settings are recommended:
+>
+	set vieoptions=cursor,folds,slash,unix
+<
+
+IGNORED FILE TYPES:				*g:volatile_ftypes*
+
+vim-stay applies heuristics to detect volatile file types, but certain file
+types escape these and need to be expressly marked as volatile (meaning
+buffers of this file type will never be persisted).
+
+Volatile file types are stored in the `volatile_ftypes` global List. To
+overwrite this list, do
+>
+	let g:volatile_ftypes = ['foo', 'bar']
+<
+any time before or after the plug-in has loaded. To add to this list without
+overwriting the defaults, make sure the plug-in has loaded, then do
+>
+	let g:volatile_ftypes += ['foo', 'bar']
+<
+==============================================================================
+3. Integration					*vim-stay-integration*
+
+
+INTEGRATION WITH 3RD PARTY PLUG-INS:
+
+Out of the box, vim-stay integrates with the following plug-ins:
+
+1. vim-stay	http://www.vim.org/scripts/script.php?script_id=5089
+
+If you'd like vim-stay to integrate with other position-setting plug-ins, open
+an issue or a PR at
+
+    https://github.com/kopischke/vim-stay/issues
+
+
+INTEGRATION API:
+
+1. Keeping the position set by other scripts	*b:stay_atpos*
+
+To make vim-stay respect a position set by an unsupported script or plug-in,
+set the `stay_atpos` buffer-local variable:
+>
+	let b:stay_atpos = [lnum, colnum]
+<
+This position will be restored after loading the session.
+
+2. Ignoring a file on a per-buffer basis	*b:stay_ignore*
+
+To stop vim-stay making and restoring sessions for a specific buffer, do
+>
+	let b:stay_ignore = 1
+<
+See the |g:volatile_ftypes| user setting for a way to ignore all buffers of
+a certain file type.
+
+==============================================================================
+4. Troubleshooting			*vim-stay-troubleshooting*
+
+
+MY FOLD STATE IS NOT PERSISTED / MY CURSOR ENDS UP IN A CLOSED FOLD
+
+You have removed "folds" 'from 'viewoptions'. See the recommended setting
+above (|vim-stay-viewoptions|).
+
+
+MY STATE IS NOT PERSISTED WHEN SWITCHING BETWEEN WINDOWS AND OTHER OS'
+
+With the default settings, 'viewoptions' uses platform specific path
+separators, which means stored view sessions are not portable. See the
+recommended setting above (|vim-stay-viewoptions|).
+
+
+MY CURRENT WORKING DIRECTORY / MY ARGLIST CHANGES WHEN OPENING A FILE
+
+vim-stay uses |mkview| and |loadview|, which persist the local arglist and
+local working directory. This can be a bit disorienting at first, but it is by
+(Vim's) design.
+
+
+VIM-STAY TRIES TO PERSIST STATE FOR TEMPORARY FILES
+
+Files in a temporary or cache directory are not recognized as volatile, unless
+their 'buftype' is set to a non-file type, as there is no way to reliably and
+portably detect which paths denote temporary state (see |tempfile| just for
+the platform specific differences in Vim's internal temporary file usage, and
+this doesn't account for things like OS specific cache directories). You can
+alleviate the issue by setting |b:stay_ignore| in affected buffers.
+
+
+VIM-STAY TRIES TO PERSIST STATE FOR OTHER VOLATILE FILES
+
+Check if the 'filetype' of the affected file is listed in |g:volatile_ftypes|
+and try adding it if it is not. I'd also be grateful if you reported the file
+type by opening a support issue (or even better, a PR) at
+
+	https://github.com/kopischke/vim-stay/issues
+
+
+MY VIEW DIRECTORY IS A FESTERING MESS
+
+That is a consequence of Vim's view session design. To quote |loadview|:
+"You might want to clean up your 'viewdir' directory now and then."
+
+
+MY PROBLEM ISN'T LISTED HERE
+
+You might have found a bug. Please open an issue at
+
+	https://github.com/kopischke/vim-stay/issues
+
+Please do not forget to list the steps to reproduce the issue as well as your
+Vim version and platform.
+
+==============================================================================
+5. Credits and License			*vim-stay-credits-license*
+
+vim-stay is maintained by Martin Kopischke
+
+	http://martin.kopischke.net
+
+and licensed under the terms of the MIT license according to the accompanying
+license file (LICENSE.md). It is inspired by, but not based on, `restore_view.vim`
+by Zhou Yi Chao (http://www.vim.org/scripts/script.php?script_id=4021).
+
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:fdm=marker:
