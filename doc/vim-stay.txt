@@ -18,7 +18,7 @@ Never lose your place in a buffer again	    	*vim-stay*
 1. Introduction					*vim-stay-introduction*
 
 vim-stay adds automated |View| creation and restoration whenever editing
-a buffer, across Vim and buffer editing sessions. It also alleviates Vim's
+a buffer, across Vim sessions and window life cycles. It also alleviates Vim's
 tendency to lose view state when cycling through buffers (via |argdo|, |bufdo|
 et al.). It is smart about which buffers should be persisted and which should
 not, making the procedure painless and invisible.
