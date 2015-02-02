@@ -31,7 +31,7 @@ VIEW SESSION CONFIGURATION:			*vim-stay-viewoptions*
 
 The following, non-standard 'viewoptions' settings are recommended:
 >
-	set vieoptions=cursor,folds,slash,unix
+	set viewoptions=cursor,folds,slash,unix
 <
 
 IGNORED FILE TYPES:				*g:volatile_ftypes*
