@@ -20,7 +20,7 @@ Recommended: `set viewoptions=cursor,folds,slash,unix`. Edit as usual. See the [
 
 ### Rationale
 
-Keeping editing session state should be a given in an editor; unluckily, Vim's solution for this, *view sessions*, are not easily automated [without encountering painful bumps][mkview-wikia]. As the one plug-in I found that aims to fix this, Zhou Yi Chao’s [*restore_view.vim*][chao-plugin], limits itself to Vim sessions, doesn’t play well with other position setting plug-ins like my own [vim-fetch][vim-fetch] and as I found its buffer name based heuristics rather error prone, I wrote my own.
+Keeping editing session state should be a given in an editor; unluckily, Vim's solution for this, *view sessions*, are not easily automated [without encountering painful bumps][mkview-wikia]. As the one plug-in I found that aims to fix this, Zhou Yi Chao’s [*restore_view.vim*][chao-plugin], limits itself to Vim editing sessions, doesn’t play well with other position setting plug-ins like my own [vim-fetch][vim-fetch] and as [I wasn’† very happy with its heuristics][heuristics], I wrote my own.
 
 ### License
 
@@ -32,6 +32,7 @@ Keeping editing session state should be a given in an editor; unluckily, Vim's s
 [badge-license]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [chao-plugin]:   http://www.vim.org/scripts/script.php?script_id=4021
 [doc]:           doc/vim-stay.txt
+[heuristics]:    https://github.com/kopischke/vim-stay/issues/2
 [issues]:        https://github.com/kopischke/vim-stay/issues
 [license]:       LICENSE.md
 [mkview-wikia]:  http://vim.wikia.com/wiki/Make_views_automatic
