@@ -1,4 +1,4 @@
-*vim-stay.txt*        For Vim version 7.0 or better          version 1.0.0
+*vim-stay.txt*        For Vim version 7.0 or better          version 1.0.1
 
 
 		VIM REFERENCE for the Stay plug-in
@@ -45,11 +45,11 @@ buffers of this type will never be persisted) by adding their 'filetype' to
 the `volatile_ftypes` global |List|.
 
 Note this list is meant as a safety net for the case heuristics fail; it
-usually should not be necessary to modify vim-stay's defaults. If you find 
+usually should not be necessary to modify vim-stay's defaults. If you find
 you need to add file types to it, make sure the plug-in has loaded, then do
 >
 	let g:volatile_ftypes += ['foo', 'bar']
-< 
+<
 ==============================================================================
 3. Integration					*vim-stay-integration*
 
@@ -60,7 +60,7 @@ Out of the box, vim-stay integrates with the following plug-ins:
 
 1. vim-fetch	http://www.vim.org/scripts/script.php?script_id=5089
 
-If you'd like vim-stay to integrate with other position-setting or view 
+If you'd like vim-stay to integrate with other position-setting or view
 management plug-ins, open an issue or a PR at
 
     https://github.com/kopischke/vim-stay/issues
