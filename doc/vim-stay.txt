@@ -1,4 +1,4 @@
-*vim-stay.txt*        For Vim version 7.0 or better          version 1.0.0
+*vim-stay.txt*        For Vim version 7.0 or better          version 1.0.1
 
 
 		VIM REFERENCE for the Stay plug-in
@@ -36,17 +36,17 @@ The following, non-standard 'viewoptions' settings are recommended:
 
 IGNORED FILE TYPES:				*g:volatile_ftypes*
 
-vim-stay applies heuristics to detect volatile file types, but certain file
-types escape these and need to be expressly marked as volatile (meaning
-buffers of this file type will never be persisted).
+vim-stay applies heuristics to detect buffers that should not be persisted,
+but in some cases non-persistent buffers slip through. Some of them are
+regular files that are not persistent by their very nature (like git commit
+messages), a few are buffers created by plug-ins that miss all indication
+that they are not files. These can be expressly marked as volatile (meaning
+buffers of this type will never be persisted) by adding their 'filetype' to
+the `volatile_ftypes` global |List|.
 
-Volatile file types are stored in the `volatile_ftypes` global List. To
-overwrite this list, do
->
-	let g:volatile_ftypes = ['foo', 'bar']
-<
-any time before or after the plug-in has loaded. To add to this list without
-overwriting the defaults, make sure the plug-in has loaded, then do
+Note this list is meant as a safety net for the case heuristics fail; it
+usually should not be necessary to modify vim-stay's defaults. If you find
+you need to add file types to it, make sure the plug-in has loaded, then do
 >
 	let g:volatile_ftypes += ['foo', 'bar']
 <
@@ -58,10 +58,10 @@ INTEGRATION WITH 3RD PARTY PLUG-INS:
 
 Out of the box, vim-stay integrates with the following plug-ins:
 
-1. vim-stay	http://www.vim.org/scripts/script.php?script_id=5089
+1. vim-fetch	http://www.vim.org/scripts/script.php?script_id=5089
 
-If you'd like vim-stay to integrate with other position-setting plug-ins, open
-an issue or a PR at
+If you'd like vim-stay to integrate with other position-setting or view
+management plug-ins, open an issue or a PR at
 
     https://github.com/kopischke/vim-stay/issues
 

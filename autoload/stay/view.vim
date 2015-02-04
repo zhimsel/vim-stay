@@ -4,7 +4,7 @@ let s:cpo = &cpo
 set cpo&vim
 
 " Make a persistent view for window {winnr}:
-" @signature:  stay#mkview({winnr:Number})
+" @signature:  stay#view#make({winnr:Number})
 " @returns:    Boolean
 function! stay#view#make(winnr) abort
   if a:winnr is -1
@@ -14,10 +14,12 @@ function! stay#view#make(winnr) abort
   try
     let l:lazyredraw = &lazyredraw
     set lazyredraw
-    let l:curwinnr   = s:gotowin(a:winnr)
+    if !s:win.goto(a:winnr)
+      return 0
+    endif
     unlet! b:stay_atpos
     mkview
-    call s:gotowin(l:curwinnr)
+    call s:win.back()
     return 1
   finally
     let &lazyredraw = l:lazyredraw
@@ -25,30 +27,45 @@ function! stay#view#make(winnr) abort
 endfunction
 
 " Load a persistent view for window {winnr}:
-" @signature:  stay#loadview({winnr:Number})
+" @signature:  stay#view#load({winnr:Number})
 " @returns:    Boolean
 function! stay#view#load(winnr) abort
-  if a:winnr is -1
+  if a:winnr is -1 || !s:win.goto(a:winnr)
     return 0
   endif
 
-  let l:curwinnr = s:gotowin(a:winnr)
   noautocmd silent loadview
   if exists('b:stay_atpos')
     call cursor(b:stay_atpos[0], b:stay_atpos[1])
     silent! normal! zOzz
   endif
-  call s:gotowin(l:curwinnr)
+  call s:win.back()
   return 1
 endfunction
 
 " Private helper functions:
-function! s:gotowin(winnr) abort
-  let l:curwinnr = winnr()
-  if a:winnr isnot l:curwinnr
-    execute 'silent!' a:winnr.'wincmd w'
+" - window navigation stack
+let s:win = {'stack': []}
+
+function! s:win.activate(winnr) abort
+  if winnr() isnot a:winnr
+    execute 'noautocmd keepjumps keepalt silent' a:winnr.'wincmd w'
   endif
-  return l:curwinnr
+endfunction
+
+function! s:win.goto(winnr) abort
+  let l:oldwinnr = winnr()
+  call self.activate(a:winnr)
+  call add(self.stack, l:oldwinnr)
+  return winnr() is a:winnr
+endfunction
+
+function! s:win.back() abort
+  if len(self.stack) > 0
+    let l:towinnr = remove(self.stack, -1)
+    call self.activate(l:towinnr)
+  endif
+  return exists('l:towinnr') && winnr() is l:towinnr
 endfunction
 
 let &cpo = s:cpo
