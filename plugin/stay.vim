@@ -17,6 +17,25 @@ for [s:key, s:val] in items(s:defaults)
   unlet! s:key s:val
 endfor
 
+" Set up 3rd party integrations:
+function! s:integrate() abort
+  let s:integrations = []
+  for l:file in globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
+    try
+      let l:name = fnamemodify(l:file, ':t:r')
+      if index(s:integrations, l:name) is -1
+        call call('stay#integrate#'.l:name.'#setup', [])
+        call add(s:integrations, l:name)
+      endif
+    catch /E117/ " no setup function found
+      continue
+    catch " integration setup execution errors
+      echomsg "Error setting up" l:name "integration:" v:errmsg
+      continue
+    endtry
+  endfor
+endfunction
+
 " Set up autocommands:
 augroup stay
   autocmd!
@@ -29,9 +48,12 @@ augroup stay
         \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
         \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
         \ endif
+
   " vim-fetch integration
-  autocmd User BufFetchPosPost
-        \ let b:stay_atpos = b:fetch_lastpos
+  autocmd User BufFetchPosPost let b:stay_atpos = b:fetch_lastpos
+
+  " generic, extensible 3rd party integration
+  call s:integrate()
 augroup END
 
 let &cpo = s:cpo

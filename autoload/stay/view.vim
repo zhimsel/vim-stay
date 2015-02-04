@@ -18,7 +18,9 @@ function! stay#view#make(winnr) abort
       return 0
     endif
     unlet! b:stay_atpos
+    silent doautocmd <nomodeline> User BufStaySavePre
     mkview
+    silent doautocmd <nomodeline> User BufStaySavePost
     call s:win.back()
     return 1
   finally
@@ -34,7 +36,9 @@ function! stay#view#load(winnr) abort
     return 0
   endif
 
+  silent doautocmd <nomodeline> User BufStayLoadPre
   noautocmd silent loadview
+  silent doautocmd <nomodeline> User BufStayLoadPost
   if exists('b:stay_atpos')
     call cursor(b:stay_atpos[0], b:stay_atpos[1])
     silent! normal! zOzz
