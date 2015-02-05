@@ -1,7 +1,7 @@
 " A LESS SIMPLISTIC TAKE ON RESTORE_VIEW.VIM
 " Maintainer: Martin Kopischke <martin@kopischke.net>
 " License:    MIT (see LICENSE.md)
-" Version:    1.0.1
+" Version:    1.1.0
 if &compatible || !has('autocmd') || !has('mksession') || v:version < 700
   finish
 endif
