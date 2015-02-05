@@ -1,4 +1,4 @@
-*vim-stay.txt*        For Vim version 7.0 or better          version 1.0.1
+*vim-stay.txt*        For Vim version 7.0 or better          version 1.1.0
 
 
 		VIM REFERENCE for the Stay plug-in
@@ -59,11 +59,15 @@ INTEGRATION WITH 3RD PARTY PLUG-INS:
 Out of the box, vim-stay integrates with the following plug-ins:
 
 1. vim-fetch	http://www.vim.org/scripts/script.php?script_id=5089
+2. FastFold     https://github.com/Konfekt/FastFold
 
 If you'd like vim-stay to integrate with other position-setting or view
 management plug-ins, open an issue or a PR at
 
     https://github.com/kopischke/vim-stay/issues
+
+If the plug-in in question is one you own or contribute to, see
+|vim-stay-plugin-api| instead.
 
 
 INTEGRATION API:
@@ -86,8 +90,40 @@ To stop vim-stay making and restoring sessions for a specific buffer, do
 See the |g:volatile_ftypes| user setting for a way to ignore all buffers of
 a certain file type.
 
+3. Autocommand API				*vim-stay-autocommands*
+
+vim-stray triggers two |User| autocommand events each when loading or saving
+state: *BufStayLoadPre* before loading a view session and *BufStayLoadPost*
+after loading it, *BufStaySavePre* before saving a view session and
+*BufStayLoadPost* after.
+
+Notes:	- The events are triggered with |:silent| to avoid flooding message
+          history with "No matching autocommands" messages. Use |:unsilent|
+	  to restore normal message processing, e.g.
+>
+		autocmd User BufStaySavePre unsilent echomsg 'Gotcha!'
+<
+4. Extended plug-in integration API		*vim-stay-plugin-api*
+
+The mechanism vim-stay itself uses to integrate with other plug-ins is open
+to 3rd parties. Add a file
+>
+	autoload/stay/integrate/yourplugin.vim
+<
+containing a `stay#integrate#yourplugin#setup()` |autoload| function to your
+plug-in. Any function with that signature found in 'runtimepath' when vim-stay
+loads will be executed. You can set up autocommands in there (which will
+automatically be added to the `stay` autocommand group), optionally leveraging
+vim-stay's autocommand API (|vim-stay-autocommands|), or add to the volatile
+'filetype' list (|g:volatile_ftypes|).
+
+The advantage over hard-wiring support for vim-stay in your plug-in is that
+- the integration will be set up when your user uses vim-stay regardless of
+  plug-in load order, but
+- the integration code will only be active if your user actually uses vim-stay.
+
 ==============================================================================
-4. Troubleshooting			*vim-stay-troubleshooting*
+4. Troubleshooting				*vim-stay-troubleshooting*
 
 
 MY FOLD STATE IS NOT PERSISTED / MY CURSOR ENDS UP IN A CLOSED FOLD
@@ -107,7 +143,8 @@ MY CURRENT WORKING DIRECTORY / MY ARGLIST CHANGES WHEN OPENING A FILE
 
 vim-stay uses |mkview| and |loadview|, which persist the local arglist and
 local working directory. This can be a bit disorienting at first, but it is by
-(Vim's) design.
+(Vim's) design. If this really irks you, you may be able to work around it
+using vim-stay's autocommand API (see |vim-stay-autocommands|).
 
 
 VIM-STAY TRIES TO PERSIST STATE FOR TEMPORARY FILES
