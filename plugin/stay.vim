@@ -1,7 +1,7 @@
 " A LESS SIMPLISTIC TAKE ON RESTORE_VIEW.VIM
 " Maintainer: Martin Kopischke <martin@kopischke.net>
 " License:    MIT (see LICENSE.md)
-" Version:    1.1.0
+" Version:    1.1.1
 if &compatible || !has('autocmd') || !has('mksession') || v:version < 700
   finish
 endif
@@ -11,7 +11,7 @@ set cpo&vim
 
 " Set defaults:
 let s:defaults = {}
-let s:defaults.volatile_ftypes = ['gitcommit', 'gitrebase', 'netrw']
+let s:defaults.volatile_ftypes = ['gitcommit', 'gitrebase', 'gitsendmail']
 for [s:key, s:val] in items(s:defaults)
   execute 'let g:'.s:key. '= get(g:, "'.s:key.'", '.string(s:val).')'
   unlet! s:key s:val
@@ -20,7 +20,7 @@ endfor
 " Set up 3rd party integrations:
 function! s:integrate() abort
   let s:integrations = []
-  for l:file in globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
+  for l:file in stay#shim#globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
     try
       let l:name = fnamemodify(l:file, ':t:r')
       if index(s:integrations, l:name) is -1
