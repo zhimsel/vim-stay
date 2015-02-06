@@ -20,7 +20,7 @@ endfor
 " Set up 3rd party integrations:
 function! s:integrate() abort
   let s:integrations = []
-  for l:file in globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
+  for l:file in stay#shim#globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
     try
       let l:name = fnamemodify(l:file, ':t:r')
       if index(s:integrations, l:name) is -1
