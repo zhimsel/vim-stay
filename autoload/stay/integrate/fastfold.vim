@@ -1,5 +1,7 @@
 " FASTFOLD INTEGRATION MODULE
 " https://github.com/Konfekt/FastFold
+let s:cpo = &cpo
+set cpo&vim
 
 " - register integration autocommands
 function! stay#integrate#fastfold#setup() abort
@@ -29,5 +31,8 @@ function! s:foldmethods() abort
   let l:fdmlocal = &l:foldmethod
   return [l:fdmlocal, get(w:, 'lastfdm', l:fdmlocal)]
 endfunction
+
+let &cpo = s:cpo
+unlet! s:cpo
 
 " vim:set sw=2 sts=2 ts=2 et fdm=marker fmr={{{,}}}:

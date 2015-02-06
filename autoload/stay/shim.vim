@@ -1,5 +1,7 @@
 " STAY EVAL SHIM MODULE
 " Are these Vim patch levels, my dear?
+let s:cpo = &cpo
+set cpo&vim
 
 " globpath:
 " - no {nosuf} argument before 7.2.051 - :h  version7.txt
@@ -18,5 +20,8 @@ function! stay#shim#globpath(path, glob, nosuf, list) abort
      \ ? split(l:result, '\n')
      \ : l:result
 endfunction
+
+let &cpo = s:cpo
+unlet! s:cpo
 
 " vim:set sw=2 sts=2 ts=2 et fdm=marker fmr={{{,}}}:
