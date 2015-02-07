@@ -28,7 +28,7 @@ function! s:integrate() abort
       catch /E117/ " no setup function found
         continue
       catch " integration setup execution errors
-        echomsg "Error setting up" l:name "integration:" v:errmsg
+        echomsg "Skipped vim-stay integration for" l:name "due to error:" v:errmsg
         continue
       endtry
       call add(s:integrations, l:name)
