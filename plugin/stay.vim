@@ -21,18 +21,18 @@ endfor
 function! s:integrate() abort
   let s:integrations = []
   for l:file in stay#shim#globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
-    try
-      let l:name = fnamemodify(l:file, ':t:r')
-      if index(s:integrations, l:name) is -1
+    let l:name = fnamemodify(l:file, ':t:r')
+    if index(s:integrations, l:name) is -1
+      try
         call call('stay#integrate#'.l:name.'#setup', [])
-        call add(s:integrations, l:name)
-      endif
-    catch /E117/ " no setup function found
-      continue
-    catch " integration setup execution errors
-      echomsg "Error setting up" l:name "integration:" v:errmsg
-      continue
-    endtry
+      catch /E117/ " no setup function found
+        continue
+      catch " integration setup execution errors
+        echomsg "Error setting up" l:name "integration:" v:errmsg
+        continue
+      endtry
+      call add(s:integrations, l:name)
+    endif
   endfor
 endfunction
 
