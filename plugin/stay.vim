@@ -11,7 +11,11 @@ set cpo&vim
 
 " Set defaults:
 let s:defaults = {}
-let s:defaults.volatile_ftypes = ['gitcommit', 'gitrebase', 'gitsendmail']
+let s:defaults.volatile_ftypes = [
+  \ 'gitcommit', 'gitrebase', 'gitsendmail',
+  \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
+  \ 'svn', 'cvs', 'cvsrc', 'bzr',
+  \ ]
 for [s:key, s:val] in items(s:defaults)
   execute 'let g:'.s:key. '= get(g:, "'.s:key.'", '.string(s:val).')'
   unlet! s:key s:val
