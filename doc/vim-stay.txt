@@ -95,7 +95,7 @@ a certain file type.
 vim-stray triggers two |User| autocommand events each when loading or saving
 state: *BufStayLoadPre* before loading a view session and *BufStayLoadPost*
 after loading it, *BufStaySavePre* before saving a view session and
-*BufStayLoadPost* after.
+*BufStaySavePost* after.
 
 Notes:	- The events are triggered with |:silent| to avoid flooding message
           history with "No matching autocommands" messages. Use |:unsilent|
