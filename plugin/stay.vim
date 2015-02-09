@@ -11,11 +11,13 @@ set cpo&vim
 
 " Set defaults:
 let s:defaults = {}
+" - bona fide file types that should never be persisted
 let s:defaults.volatile_ftypes = [
   \ 'gitcommit', 'gitrebase', 'gitsendmail',
   \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
   \ 'svn', 'cvs', 'cvsrc', 'bzr',
   \ ]
+" - make defaults available as individual global variables
 for [s:key, s:val] in items(s:defaults)
   execute 'let g:'.s:key. '= get(g:, "'.s:key.'", '.string(s:val).')'
   unlet! s:key s:val
