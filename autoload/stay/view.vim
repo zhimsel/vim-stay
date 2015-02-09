@@ -37,8 +37,13 @@ function! stay#view#load(winnr) abort
   endif
 
   call s:doautocmd('BufStayLoadPre')
-  noautocmd silent loadview
+  try
+    noautocmd silent loadview
+  catch " silently return on errors
+    return 0
+  endtry
   call s:doautocmd('BufStayLoadPost')
+
   if exists('b:stay_atpos')
     call cursor(b:stay_atpos[0], b:stay_atpos[1])
     silent! normal! zOzz
