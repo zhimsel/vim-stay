@@ -158,12 +158,12 @@ recommended setting under |vim-stay-viewoptions|.
 
 VIM-STAY TRIES TO PERSIST STATE FOR TEMPORARY FILES
 
-Files in a temporary or cache directory are not recognized as volatile, unless
-their 'buftype' is set to a non-file type, as there is no way to reliably and
-portably detect which paths denote temporary state (see |tempfile| just for
-the platform specific differences in Vim's internal temporary file usage, and
-this doesn't account for things like OS specific cache directories). You can
-alleviate the issue by setting |b:stay_ignore| in affected buffers.
+- If the files are in a standard system temporary location, you should check
+  if it listed in 'backupskip' - vim-stray will ignore files in the hierarchy
+  of directories listed there.
+- Files in a temporary or cache directory not listed in 'backupskip' are not
+  recognized as volatile, unless their 'buftype' is set to a non-file type.
+  You can alleviate the issue by setting |b:stay_ignore| in affected buffers.
 
 
 VIM-STAY TRIES TO PERSIST STATE FOR OTHER VOLATILE FILES
