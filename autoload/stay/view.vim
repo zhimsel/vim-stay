@@ -18,9 +18,9 @@ function! stay#view#make(winnr) abort
       return 0
     endif
     unlet! b:stay_atpos
-    silent doautocmd <nomodeline> User BufStaySavePre
+    call s:doautocmd('BufStaySavePre')
     mkview
-    silent doautocmd <nomodeline> User BufStaySavePost
+    call s:doautocmd('BufStaySavePost')
     call s:win.back()
     return 1
   finally
@@ -36,9 +36,9 @@ function! stay#view#load(winnr) abort
     return 0
   endif
 
-  silent doautocmd <nomodeline> User BufStayLoadPre
+  call s:doautocmd('BufStayLoadPre')
   noautocmd silent loadview
-  silent doautocmd <nomodeline> User BufStayLoadPost
+  call s:doautocmd('BufStayLoadPost')
   if exists('b:stay_atpos')
     call cursor(b:stay_atpos[0], b:stay_atpos[1])
     silent! normal! zOzz
@@ -47,7 +47,7 @@ function! stay#view#load(winnr) abort
   return 1
 endfunction
 
-" Private helper functions:
+" Private helper functions: {{{
 " - window navigation stack
 let s:win = {'stack': []}
 
@@ -71,6 +71,16 @@ function! s:win.back() abort
   endif
   return exists('l:towinnr') && winnr() is l:towinnr
 endfunction
+
+" - apply User autocommands matching {pattern}, but only if there are any
+"   1. avoids flooding message history with "No matching autocommands"
+"   2. avoids re-applying modelines in Vim < 7.3.442, which doesn't honor |<nomodeline>|
+"   see https://groups.google.com/forum/#!topic/vim_dev/DidKMDAsppw
+function! s:doautocmd(pattern) abort
+  if exists('#User#'.a:pattern)
+    execute 'doautocmd <nomodeline> User' a:pattern
+  endif
+endfunction " }}}
 
 let &cpo = s:cpo
 unlet! s:cpo

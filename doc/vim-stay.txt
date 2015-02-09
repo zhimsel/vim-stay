@@ -100,12 +100,6 @@ state: *BufStayLoadPre* before loading a view session and *BufStayLoadPost*
 after loading it, *BufStaySavePre* before saving a view session and
 *BufStaySavePost* after.
 
-Notes:	- The events are triggered with |:silent| to avoid flooding message
-          history with "No matching autocommands" messages. Use |:unsilent|
-	  to restore normal message processing, e.g.
->
-		autocmd User BufStaySavePre unsilent echomsg 'Gotcha!'
-<
 4. Extended plug-in integration API		*vim-stay-plugin-api*
 
 The mechanism vim-stay itself uses to integrate with other plug-ins is open
