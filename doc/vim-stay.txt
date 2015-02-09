@@ -33,6 +33,9 @@ The following, non-standard 'viewoptions' settings are recommended:
 >
 	set viewoptions=cursor,folds,slash,unix
 <
+It is recommended to clear the 'viewdir' contents after changing this option,
+as it is only applied when creating a view session file, not when loading it.
+
 
 IGNORED FILE TYPES:				*g:volatile_ftypes*
 
@@ -126,17 +129,23 @@ The advantage over hard-wiring support for vim-stay in your plug-in is that
 4. Troubleshooting				*vim-stay-troubleshooting*
 
 
+MY CURSOR POSITION IS NOT PERSISTED
+
+You have removed "cursor" from 'viewoptions'. See the recommended setting
+under |vim-stay-viewoptions|.
+
+
 MY FOLD STATE IS NOT PERSISTED / MY CURSOR ENDS UP IN A CLOSED FOLD
 
-You have removed "folds" 'from 'viewoptions'. See the recommended setting
-above (|vim-stay-viewoptions|).
+You have removed "folds" from 'viewoptions'. See the recommended setting
+under |vim-stay-viewoptions|.
 
 
 MY STATE IS NOT PERSISTED WHEN SWITCHING BETWEEN WINDOWS AND OTHER OS'
 
 With the default settings, 'viewoptions' uses platform specific path
 separators, which means stored view sessions are not portable. See the
-recommended setting above (|vim-stay-viewoptions|).
+recommended setting under |vim-stay-viewoptions|.
 
 
 MY CURRENT WORKING DIRECTORY / MY ARGLIST CHANGES WHEN OPENING A FILE
@@ -145,6 +154,12 @@ vim-stay uses |mkview| and |loadview|, which persist the local arglist and
 local working directory. This can be a bit disorienting at first, but it is by
 (Vim's) design. If this really irks you, you may be able to work around it
 using vim-stay's autocommand API (see |vim-stay-autocommands|).
+
+
+VIM-STAY MESSES UP OPTION X / BUFFER VARIABLE Y
+
+You have "options" or "localoptions" set in 'viewoptions'. See the
+recommended setting under |vim-stay-viewoptions|.
 
 
 VIM-STAY TRIES TO PERSIST STATE FOR TEMPORARY FILES
