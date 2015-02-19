@@ -7,7 +7,7 @@
 Never lose your place in a buffer again	    	*vim-stay*
 
 1. Introduction				|vim-stay-introduction|
-2. Usage				|vim-stay-configuration|
+2. Configuration			|vim-stay-configuration|
 3. Position specifications		|vim-stay-integration|
 4. Troubleshooting			|vim-stay-troubleshooting|
 5. Credits and license			|vim-stay-credits-license|
