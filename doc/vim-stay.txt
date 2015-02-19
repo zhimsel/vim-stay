@@ -8,9 +8,10 @@ Never lose your place in a buffer again	    	*vim-stay*
 
 1. Introduction				|vim-stay-introduction|
 2. Configuration			|vim-stay-configuration|
-3. Position specifications		|vim-stay-integration|
-4. Troubleshooting			|vim-stay-troubleshooting|
-5. Credits and license			|vim-stay-credits-license|
+3. Commands				|vim-stay-commands|
+4. Position specifications		|vim-stay-integration|
+5. Troubleshooting			|vim-stay-troubleshooting|
+6. Credits and license			|vim-stay-credits-license|
 
 {not available when |'compatible'| is set}
 
@@ -35,6 +36,7 @@ The following, non-standard 'viewoptions' settings are recommended:
 <
 It is recommended to clear the 'viewdir' contents after changing this option,
 as it is only applied when creating a view session file, not when loading it.
+vim-stay provides the |:CleanViewdir| command to do that.
 
 
 IGNORED FILE TYPES:				*g:volatile_ftypes*
@@ -54,7 +56,18 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 	let g:volatile_ftypes += ['foo', 'bar']
 <
 ==============================================================================
-3. Integration					*vim-stay-integration*
+3. Commands					*vim-stay-commands*
+
+
+:CleanViewdir[!] [days]
+		Remove all saved view sessions in 'viewdir', optionally
+		keeping view sessions files not older than {days} days.
+
+		Note: this will ask for confirmation before deleting files.
+		Use the bang variant to bypass the confirmation prompt.
+
+==============================================================================
+4. Integration					*vim-stay-integration*
 
 
 INTEGRATION WITH 3RD PARTY PLUG-INS:
@@ -120,7 +133,7 @@ The advantage over hard-wiring support for vim-stay in your plug-in is that
 - the integration code will only be active if your user actually uses vim-stay.
 
 ==============================================================================
-4. Troubleshooting				*vim-stay-troubleshooting*
+5. Troubleshooting				*vim-stay-troubleshooting*
 
 
 MY CURSOR POSITION IS NOT PERSISTED
@@ -179,6 +192,7 @@ MY VIEW DIRECTORY IS A FESTERING MESS
 
 That is a consequence of Vim's view session design. To quote |loadview|:
 "You might want to clean up your 'viewdir' directory now and then."
+Use the |:CleanViewdir| command to do exactly that.
 
 
 MY PROBLEM ISN'T LISTED HERE
@@ -191,7 +205,7 @@ Please do not forget to list the steps to reproduce the issue as well as your
 Vim version and platform.
 
 ==============================================================================
-5. Credits and License			*vim-stay-credits-license*
+6. Credits and License			*vim-stay-credits-license*
 
 vim-stay is maintained by Martin Kopischke
 

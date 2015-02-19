@@ -59,6 +59,10 @@ augroup stay
   call s:integrate()
 augroup END
 
+" Set up commands:
+command! -bang -nargs=? CleanViewdir
+       \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
+
 let &cpoptions = s:cpoptions
 unlet! s:cpoptions
 
