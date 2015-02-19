@@ -1,7 +1,7 @@
 " AUTOLOAD FUNCTION LIBRARY FOR VIM-STAY
 " View session handling functions
-let s:cpo = &cpo
-set cpo&vim
+let s:cpoptions = &cpoptions
+set cpoptions&vim
 
 " Make a persistent view for window {winnr}:
 " @signature:  stay#view#make({winnr:Number})
@@ -87,7 +87,7 @@ function! s:doautocmd(pattern) abort
   endif
 endfunction " }}}
 
-let &cpo = s:cpo
-unlet! s:cpo
+let &cpoptions = s:cpoptions
+unlet! s:cpoptions
 
 " vim:set sw=2 sts=2 ts=2 et fdm=marker fmr={{{,}}}:

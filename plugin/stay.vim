@@ -6,8 +6,8 @@ if &compatible || !has('autocmd') || !has('mksession') || v:version < 700
   finish
 endif
 
-let s:cpo = &cpo
-set cpo&vim
+let s:cpoptions = &cpoptions
+set cpoptions&vim
 
 " Set defaults:
 let s:defaults = {}
@@ -62,7 +62,7 @@ augroup stay
   call s:integrate()
 augroup END
 
-let &cpo = s:cpo
-unlet! s:cpo
+let &cpoptions = s:cpoptions
+unlet! s:cpoptions
 
 " vim:set sw=2 sts=2 ts=2 et fdm=marker fmr={{{,}}}:

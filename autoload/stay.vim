@@ -1,7 +1,7 @@
 " AUTOLOAD FUNCTION LIBRARY FOR VIM-STAY
 " Core functions (will be loaded when first autocommand is triggered)
-let s:cpo = &cpo
-set cpo&vim
+let s:cpoptions = &cpoptions
+set cpoptions&vim
 
 " Check if buffer {bufnr} is persistent:
 " @signature:  stay#ispersistent({bufnr:Number}, {volatile_ftypes:List<String>})
@@ -49,7 +49,7 @@ function! stay#isftype(bufnr, ftypes) abort
   return !empty(filter(l:candidates, 'index(a:ftypes, v:val) isnot -1'))
 endfunction
 
-let &cpo = s:cpo
-unlet! s:cpo
+let &cpoptions = s:cpoptions
+unlet! s:cpoptions
 
 " vim:set sw=2 sts=2 ts=2 et fdm=marker fmr={{{,}}}:

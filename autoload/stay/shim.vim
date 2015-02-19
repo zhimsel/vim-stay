@@ -4,8 +4,8 @@ if v:version < 700
   finish
 endif
 
-let s:cpo = &cpo
-set cpo&vim
+let s:cpoptions = &cpoptions
+set cpoptions&vim
 
 " Full forward and backward `globpath()` compatibility between Vim 7.0 and Vim 7.4:
 " - no {nosuf} argument before 7.2.051 - :h  version7.txt
@@ -65,7 +65,7 @@ function! s:fnames2list(fnames, setnosuf) abort
   return sort(l:fnames, 'i')
 endfunction
 
-let &cpo = s:cpo
-unlet! s:cpo
+let &cpoptions = s:cpoptions
+unlet! s:cpoptions
 
 " vim:set sw=2 sts=2 ts=2 et fdm=marker fmr={{{,}}}:
