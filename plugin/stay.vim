@@ -55,9 +55,6 @@ augroup stay
         \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
         \ endif
 
-  " vim-fetch integration
-  autocmd User BufFetchPosPost let b:stay_atpos = b:fetch_lastpos
-
   " generic, extensible 3rd party integration
   call s:integrate()
 augroup END
