@@ -3,10 +3,12 @@
 let s:cpo = &cpo
 set cpo&vim
 
-" - register integration autocommands
+" - register integration autocommands if FastFold plug-in is found
 function! stay#integrate#fastfold#setup() abort
-  autocmd User BufStaySavePre  unsilent call stay#integrate#fastfold#save_pre()
-  autocmd User BufStaySavePost unsilent call stay#integrate#fastfold#save_post()
+  if !empty(findfile('plugin/fastfold.vim', &rtp))
+    autocmd User BufStaySavePre  unsilent call stay#integrate#fastfold#save_pre()
+    autocmd User BufStaySavePost unsilent call stay#integrate#fastfold#save_post()
+  endif
 endfunction
 
 " - on User event 'BufStaySavePre': restore original 'foldmethod'
