@@ -10,7 +10,7 @@ set cpoptions&vim
 " Full forward and backward `globpath()` compatibility between Vim 7.0 and Vim 7.4:
 " - no {nosuf} argument before 7.2.051 - :h  version7.txt
 " - no {list}  argument before 7.4.279 - http://ftp.vim.org/pub/vim/patches/7.4/README
-if v:version < 702 || (v:version is 702 && !has('patch-051'))
+if v:version < 702 || (v:version is 702 && !has('patch051'))
   function! stay#shim#globpath(path, glob, ...) abort
     let l:nosuf      = get(a:, 1, 0)
     let l:list       = get(a:, 2, 0)
@@ -29,7 +29,7 @@ if v:version < 702 || (v:version is 702 && !has('patch-051'))
     endtry
   endfunction
 
-elseif v:version < 704 || (v:version is 704 && !has('patch-279'))
+elseif v:version < 704 || (v:version is 704 && !has('patch279'))
   function! stay#shim#globpath(path, glob, ...) abort
     let l:nosuf  = get(a:, 1, 0)
     let l:list   = get(a:, 2, 0)
