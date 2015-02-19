@@ -13,8 +13,8 @@ set cpo&vim
 "              - not a preview window
 "              - not a diff window
 "              - buffer's 'bufhidden' must be empty or "hide"
-"              - buffer must not be of a volatile file type
 "              - buffer must map to a readable file
+"              - buffer must not be of a volatile file type
 "              - buffer file must not be located in a known temp dir
 function! stay#ispersistent(bufnr, volatile_ftypes) abort
   let l:bufpath = expand('#'.a:bufnr.':p')
@@ -26,8 +26,8 @@ function! stay#ispersistent(bufnr, volatile_ftypes) abort
     \ && getbufvar(a:bufnr, '&previewwindow') isnot 1
     \ && getbufvar(a:bufnr, '&diff') isnot 1
     \ && index(['', 'hide'], getbufvar(a:bufnr, '&bufhidden')) isnot -1
-    \ && index(a:volatile_ftypes, getbufvar(a:bufnr, '&filetype')) is -1
     \ && filereadable(l:bufpath)
+    \ && stay#isftype(a:bufnr, a:volatile_ftypes) isnot 1
     \ && stay#istemp(l:bufpath) isnot 1
 endfunction
 
@@ -39,6 +39,15 @@ function! stay#istemp(path) abort
   return index(l:candidates, a:path) isnot -1
 endfunction
 
+" Check if one of {bufnr}'s 'filetype' parts is on the {ftypes} List:
+" @signature:  stay#isftype({bufnr:Number}, {ftypes:List<String>})
+" @returns:    Boolean
+" @notes:      - tests individual parts of composite (dotted) 'filetype's
+"              - comparison is always case sensitive
+function! stay#isftype(bufnr, ftypes) abort
+  let l:candidates = split(getbufvar(a:bufnr, '&filetype'), '\.')
+  return !empty(filter(l:candidates, 'index(a:ftypes, v:val) isnot -1'))
+endfunction
 
 let &cpo = s:cpo
 unlet! s:cpo
