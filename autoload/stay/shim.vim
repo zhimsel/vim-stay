@@ -10,12 +10,10 @@ set cpoptions&vim
 " Full forward and backward `globpath()` compatibility between Vim 7.0 and Vim 7.4:
 " - no {nosuf} argument before 7.2.051 - :h  version7.txt
 " - no {list}  argument before 7.4.279 - http://ftp.vim.org/pub/vim/patches/7.4/README
-function! stay#shim#globpath(path, glob, ...) abort
-  let l:nosuf = get(a:, 1, 0)
-  let l:list  = get(a:, 2, 0)
-
-  if v:version < 702 || (v:version is 702 && !has('patch-051'))
-    " - no {nosuf} or {list} support
+if v:version < 702 || (v:version is 702 && !has('patch-051'))
+  function! stay#shim#globpath(path, glob, ...) abort
+    let l:nosuf      = get(a:, 1, 0)
+    let l:list       = get(a:, 2, 0)
     let l:suffixes   = &suffixes
     let l:wildignore = &wildignore
     try
@@ -29,16 +27,21 @@ function! stay#shim#globpath(path, glob, ...) abort
       let &suffixes   = l:suffixes
       let &wildignore = l:wildignore
     endtry
-  endif
+  endfunction
 
-  if v:version < 704 || (v:version is 704 && !has('patch-279'))
-    " - no {list} support
+elseif v:version < 704 || (v:version is 704 && !has('patch-279'))
+  function! stay#shim#globpath(path, glob, ...) abort
+    let l:nosuf  = get(a:, 1, 0)
+    let l:list   = get(a:, 2, 0)
     let l:result = globpath(a:path, a:glob, l:nosuf)
     return l:list isnot 0 ? s:fnames2list(l:result, l:nosuf) : l:result
-  endif
+  endfunction
 
-  return globpath(a:path, a:glob, l:nosuf, l:list)
-endfunction
+else
+  function! stay#shim#globpath(path, glob, ...) abort
+    return globpath(a:path, a:glob, get(a:, 1, 0), get(a:, 2, 0))
+  endfunction
+endif
 
 " Get a List out of {fnames} without mangling file names with NL in them:
 " @signature:  s:fnames2list({fnames:String[NL-separated]}, {setnosuf:Boolean})
