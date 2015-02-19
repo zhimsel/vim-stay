@@ -13,7 +13,8 @@ Never lose your place in a buffer again	    	*vim-stay*
 5. Troubleshooting			|vim-stay-troubleshooting|
 6. Credits and license			|vim-stay-credits-license|
 
-{not available when |'compatible'| is set}
+{not available when |'compatible'| is set, or when Vim is compiled without
+|+autocmd| or without |+mksession|}
 
 ==============================================================================
 1. Introduction					*vim-stay-introduction*
