@@ -8,6 +8,7 @@ function! stay#integrate#fastfold#setup() abort
   if !empty(findfile('plugin/fastfold.vim', &rtp))
     autocmd User BufStaySavePre  unsilent call stay#integrate#fastfold#save_pre()
     autocmd User BufStaySavePost unsilent call stay#integrate#fastfold#save_post()
+    autocmd User BufStayLoadPost,BufStaySavePost let b:isPersistent = 1
   endif
 endfunction
 
