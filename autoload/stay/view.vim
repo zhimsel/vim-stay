@@ -37,7 +37,7 @@ function! stay#view#load(winnr) abort
   endif
 
   call s:doautocmd('User', 'BufStayLoadPre')
-  try
+  try   " significantly slows down buffer loads without noautocmd
     noautocmd silent loadview
   catch " silently return on errors
     return 0
