@@ -14,10 +14,11 @@ endfunction
 
 " - on User event 'BufStaySavePre': restore original 'foldmethod'
 function! stay#integrate#fastfold#save_pre() abort
-  let [l:fdmlocal, l:fdmorig] = [&l:foldmethod, get(w:, 'lastfdm', &l:foldmethod)]
-  if l:fdmorig isnot l:fdmlocal
-\ && index(split(&viewoptions, ','), 'folds') isnot -1
-    noautocmd silent let &l:foldmethod = l:fdmorig
+  if index(split(&viewoptions, ','), 'folds') isnot -1
+    let [l:fdmlocal, l:fdmorig] = [&l:foldmethod, get(w:, 'lastfdm', &l:foldmethod)]
+    if l:fdmorig isnot l:fdmlocal
+      noautocmd silent let &l:foldmethod = l:fdmorig
+    endif
   endif
 endfunction
 
