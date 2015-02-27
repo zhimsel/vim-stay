@@ -14,7 +14,7 @@ endfunction
 
 " - on User event 'BufStaySavePre': restore original 'foldmethod'
 function! stay#integrate#fastfold#save_pre() abort
-  let [l:fdmlocal, l:fdmorig] = s:foldmethods()
+  let [l:fdmlocal, l:fdmorig] = [&l:foldmethod, get(w:, 'lastfdm', &l:foldmethod)]
   if l:fdmorig isnot l:fdmlocal
 \ && index(split(&viewoptions, ','), 'folds') isnot -1
     noautocmd silent let &l:foldmethod = l:fdmorig
@@ -23,16 +23,9 @@ endfunction
 
 " - on User event 'BufStaySavePost': restore FastFold 'foldmethod'
 function! stay#integrate#fastfold#save_post() abort
-  let [l:fdmlocal, l:fdmorig] = s:foldmethods()
-  if l:fdmorig isnot l:fdmlocal
+  if &foldmethod isnot# 'manual' && exists('w:lastfdm')
     noautocmd silent let &l:foldmethod = 'manual'
   endif
-endfunction
-
-" - return tuple of current local and FastFold stored 'foldmethod'
-function! s:foldmethods() abort
-  let l:fdmlocal = &l:foldmethod
-  return [l:fdmlocal, get(w:, 'lastfdm', l:fdmlocal)]
 endfunction
 
 let &cpoptions = s:cpoptions
