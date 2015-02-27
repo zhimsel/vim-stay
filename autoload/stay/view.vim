@@ -18,9 +18,9 @@ function! stay#view#make(winnr) abort
       return 0
     endif
     unlet! b:stay_atpos
-    call s:doautocmd('BufStaySavePre')
+    call s:doautocmd('User', 'BufStaySavePre')
     mkview
-    call s:doautocmd('BufStaySavePost')
+    call s:doautocmd('User', 'BufStaySavePost')
     call s:win.back()
     return 1
   finally
@@ -36,13 +36,14 @@ function! stay#view#load(winnr) abort
     return 0
   endif
 
-  call s:doautocmd('BufStayLoadPre')
+  call s:doautocmd('User', 'BufStayLoadPre')
   try
     noautocmd silent loadview
   catch " silently return on errors
     return 0
   endtry
-  call s:doautocmd('BufStayLoadPost')
+  call s:doautocmd('User', 'BufStayLoadPost')
+  call s:doautocmd('SessionLoadPost')
 
   if exists('b:stay_atpos')
     call cursor(b:stay_atpos[0], b:stay_atpos[1])
@@ -77,13 +78,15 @@ function! s:win.back() abort
   return exists('l:towinnr') && winnr() is l:towinnr
 endfunction
 
-" - apply User autocommands matching {pattern}, but only if there are any
+" - apply {event} autocommands, optionally matching pattern {a:1},
+"   but only if there are any
 "   1. avoids flooding message history with "No matching autocommands"
 "   2. avoids re-applying modelines in Vim < 7.3.442, which doesn't honor |<nomodeline>|
 "   see https://groups.google.com/forum/#!topic/vim_dev/DidKMDAsppw
-function! s:doautocmd(pattern) abort
-  if exists('#User#'.a:pattern)
-    execute 'doautocmd <nomodeline> User' a:pattern
+function! s:doautocmd(event, ...) abort
+  let l:event = a:0 ? [a:event, a:1] : [a:event]
+  if exists('#'.join(l:event, '#'))
+    execute 'doautocmd <nomodeline>' join(l:event, ' ')
   endif
 endfunction " }}}
 
