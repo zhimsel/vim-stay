@@ -67,6 +67,11 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 		Note: this will ask for confirmation before deleting files.
 		Use the bang variant to bypass the confirmation prompt.
 
+:StayReload[!]	Re-source the plug-in, resetting autocommands and reloading
+		all integration modules. The bang variant will also reset
+		global configuration variables (currently, only
+		|g:volatile_ftypes|) to the plug-in defaults.
+
 ==============================================================================
 4. Integration					*vim-stay-integration*
 

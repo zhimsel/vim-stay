@@ -9,7 +9,7 @@ endif
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
-" Set defaults:
+" Plug-in defaults:
 let s:defaults = {}
 " - bona fide file types that should never be persisted
 let s:defaults.volatile_ftypes = [
@@ -17,13 +17,8 @@ let s:defaults.volatile_ftypes = [
   \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
   \ 'svn', 'cvs', 'cvsrc', 'bzr',
   \ ]
-" - make defaults available as individual global variables
-for [s:key, s:val] in items(s:defaults)
-  execute 'let g:'.s:key. '= get(g:, "'.s:key.'", '.string(s:val).')'
-  unlet! s:key s:val
-endfor
 
-" Set up 3rd party integrations:
+" Loader for 3rd party integrations:
 function! s:integrate() abort
   let s:integrations = []
   for l:file in stay#shim#globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
@@ -42,26 +37,40 @@ function! s:integrate() abort
   endfor
 endfunction
 
-" Set up autocommands:
-augroup stay
-  autocmd!
-  " default buffer handling
-  autocmd BufLeave,BufWinLeave ?*
-        \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-        \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
-        \ endif
-  autocmd BufWinEnter ?*
-        \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-        \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
-        \ endif
+" Set up global configuration, autocommands, commands:
+function! s:setup(defaults) abort
+  " - make defaults available as individual global variables,
+  "   respecting pre-set global vars unless {defaults} is 1
+  for [s:key, s:val] in items(s:defaults)
+    let g:{s:key} = a:defaults is 1 ? s:val : get(g:, s:key, s:val)
+    unlet! s:key s:val
+  endfor
 
-  " generic, extensible 3rd party integration
-  call s:integrate()
-augroup END
+  " - 'stay' autocommand group (also used by integrations)
+  augroup stay
+    autocmd!
+    " default buffer handling
+    autocmd BufLeave,BufWinLeave ?*
+          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
+          \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
+          \ endif
+    autocmd BufWinEnter ?*
+          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
+          \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
+          \ endif
 
-" Set up commands:
-command! -bang -nargs=? CleanViewdir
-       \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
+    " generic, extensible 3rd party integration
+    call s:integrate()
+  augroup END
+
+  " - ex commands
+  command! -bang -nargs=? CleanViewdir
+        \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
+  command! -bang -nargs=0 StayReload
+        \ call <SID>setup(expand('<bang>') is '!')
+endfunction
+
+call s:setup(0)
 
 let &cpoptions = s:cpoptions
 unlet! s:cpoptions
