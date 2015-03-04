@@ -1,62 +1,78 @@
 " A LESS SIMPLISTIC TAKE ON RESTORE_VIEW.VIM
 " Maintainer: Martin Kopischke <martin@kopischke.net>
 " License:    MIT (see LICENSE.md)
-" Version:    1.1.1
+" Version:    1.2.0
 if &compatible || !has('autocmd') || !has('mksession') || v:version < 700
   finish
 endif
 
-let s:cpo = &cpo
-set cpo&vim
+let s:cpoptions = &cpoptions
+set cpoptions&vim
 
-" Set defaults:
+" Plug-in defaults:
 let s:defaults = {}
-let s:defaults.volatile_ftypes = ['gitcommit', 'gitrebase', 'gitsendmail']
-for [s:key, s:val] in items(s:defaults)
-  execute 'let g:'.s:key. '= get(g:, "'.s:key.'", '.string(s:val).')'
-  unlet! s:key s:val
-endfor
+" - bona fide file types that should never be persisted
+let s:defaults.volatile_ftypes = [
+  \ 'gitcommit', 'gitrebase', 'gitsendmail',
+  \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
+  \ 'svn', 'cvs', 'cvsrc', 'bzr',
+  \ ]
 
-" Set up 3rd party integrations:
+" Loader for 3rd party integrations:
 function! s:integrate() abort
   let s:integrations = []
   for l:file in stay#shim#globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
-    try
-      let l:name = fnamemodify(l:file, ':t:r')
-      if index(s:integrations, l:name) is -1
+    let l:name = fnamemodify(l:file, ':t:r')
+    if index(s:integrations, l:name) is -1
+      try
         call call('stay#integrate#'.l:name.'#setup', [])
-        call add(s:integrations, l:name)
-      endif
-    catch /E117/ " no setup function found
-      continue
-    catch " integration setup execution errors
-      echomsg "Error setting up" l:name "integration:" v:errmsg
-      continue
-    endtry
+      catch /E117/ " no setup function found
+        continue
+      catch " integration setup execution errors
+        echomsg "Skipped vim-stay integration for" l:name "due to error:" v:errmsg
+        continue
+      endtry
+      call add(s:integrations, l:name)
+    endif
   endfor
 endfunction
 
-" Set up autocommands:
-augroup stay
-  autocmd!
-  " default buffer handling
-  autocmd BufLeave,BufWinLeave ?*
-        \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-        \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
-        \ endif
-  autocmd BufWinEnter ?*
-        \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-        \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
-        \ endif
+" Set up global configuration, autocommands, commands:
+function! s:setup(defaults) abort
+  " - make defaults available as individual global variables,
+  "   respecting pre-set global vars unless {defaults} is 1
+  for [s:key, s:val] in items(s:defaults)
+    let g:{s:key} = a:defaults is 1 ? s:val : get(g:, s:key, s:val)
+    unlet! s:key s:val
+  endfor
 
-  " vim-fetch integration
-  autocmd User BufFetchPosPost let b:stay_atpos = b:fetch_lastpos
+  " - 'stay' autocommand group (also used by integrations)
+  augroup stay
+    autocmd!
+    " default buffer handling
+    autocmd BufLeave,BufWinLeave ?*
+          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
+          \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
+          \ endif
+    autocmd BufWinEnter ?*
+          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
+          \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
+          \ endif
 
-  " generic, extensible 3rd party integration
-  call s:integrate()
-augroup END
+    " generic, extensible 3rd party integration
+    call s:integrate()
+  augroup END
 
-let &cpo = s:cpo
-unlet! s:cpo
+  " - ex commands
+  command! -bang -nargs=? CleanViewdir
+        \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
+  command! -bang -nargs=0 StayReload
+        \ call <SID>setup(expand('<bang>') is '!')
+endfunction
+
+call s:setup(0)
+
+let &cpoptions = s:cpoptions
+unlet! s:cpoptions
 
 " vim:set sw=2 sts=2 ts=2 et fdm=marker fmr={{{,}}}:

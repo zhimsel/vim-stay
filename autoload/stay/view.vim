@@ -1,7 +1,7 @@
 " AUTOLOAD FUNCTION LIBRARY FOR VIM-STAY
 " View session handling functions
-let s:cpo = &cpo
-set cpo&vim
+let s:cpoptions = &cpoptions
+set cpoptions&vim
 
 " Make a persistent view for window {winnr}:
 " @signature:  stay#view#make({winnr:Number})
@@ -18,9 +18,9 @@ function! stay#view#make(winnr) abort
       return 0
     endif
     unlet! b:stay_atpos
-    silent doautocmd <nomodeline> User BufStaySavePre
+    call s:doautocmd('User', 'BufStaySavePre')
     mkview
-    silent doautocmd <nomodeline> User BufStaySavePost
+    call s:doautocmd('User', 'BufStaySavePost')
     call s:win.back()
     return 1
   finally
@@ -36,9 +36,15 @@ function! stay#view#load(winnr) abort
     return 0
   endif
 
-  silent doautocmd <nomodeline> User BufStayLoadPre
-  noautocmd silent loadview
-  silent doautocmd <nomodeline> User BufStayLoadPost
+  call s:doautocmd('User', 'BufStayLoadPre')
+  try   " significantly slows down buffer loads without noautocmd
+    noautocmd silent loadview
+  catch " silently return on errors
+    return 0
+  endtry
+  call s:doautocmd('User', 'BufStayLoadPost')
+  call s:doautocmd('SessionLoadPost')
+
   if exists('b:stay_atpos')
     call cursor(b:stay_atpos[0], b:stay_atpos[1])
     silent! normal! zOzz
@@ -47,7 +53,7 @@ function! stay#view#load(winnr) abort
   return 1
 endfunction
 
-" Private helper functions:
+" Private helper functions: {{{
 " - window navigation stack
 let s:win = {'stack': []}
 
@@ -72,7 +78,19 @@ function! s:win.back() abort
   return exists('l:towinnr') && winnr() is l:towinnr
 endfunction
 
-let &cpo = s:cpo
-unlet! s:cpo
+" - apply {event} autocommands, optionally matching pattern {a:1},
+"   but only if there are any
+"   1. avoids flooding message history with "No matching autocommands"
+"   2. avoids re-applying modelines in Vim < 7.3.442, which doesn't honor |<nomodeline>|
+"   see https://groups.google.com/forum/#!topic/vim_dev/DidKMDAsppw
+function! s:doautocmd(event, ...) abort
+  let l:event = a:0 ? [a:event, a:1] : [a:event]
+  if exists('#'.join(l:event, '#'))
+    execute 'doautocmd <nomodeline>' join(l:event, ' ')
+  endif
+endfunction " }}}
+
+let &cpoptions = s:cpoptions
+unlet! s:cpoptions
 
 " vim:set sw=2 sts=2 ts=2 et fdm=marker fmr={{{,}}}:
