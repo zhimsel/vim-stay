@@ -3,13 +3,18 @@
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
+" - cancel integration if FastFold is not found
+if empty(findfile('plugin/fastfold.vim', &rtp))
+  let &cpoptions = s:cpoptions
+  unlet! s:cpoptions
+  finish
+endif
+
 " - register integration autocommands if FastFold plug-in is found
 function! stay#integrate#fastfold#setup() abort
-  if !empty(findfile('plugin/fastfold.vim', &rtp))
-    autocmd User BufStaySavePre  unsilent call stay#integrate#fastfold#save_pre()
-    autocmd User BufStaySavePost unsilent call stay#integrate#fastfold#save_post()
-    autocmd User BufStayLoadPost,BufStaySavePost let b:isPersistent = 1
-  endif
+  autocmd User BufStaySavePre  unsilent call stay#integrate#fastfold#save_pre()
+  autocmd User BufStaySavePost unsilent call stay#integrate#fastfold#save_post()
+  autocmd User BufStayLoadPost,BufStaySavePost let b:isPersistent = 1
 endfunction
 
 " - on User event 'BufStaySavePre': restore original 'foldmethod'
