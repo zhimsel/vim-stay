@@ -154,7 +154,7 @@ You have removed "folds" from 'viewoptions'. See the recommended setting
 under |vim-stay-viewoptions|.
 
 
-MY STATE IS NOT PERSISTED WHEN SWITCHING BETWEEN WINDOWS AND OTHER OS'
+MY STATE IS NOT PERSISTED WHEN SWITCHING BETWEEN WINDOWS AND OTHER OSes
 
 With the default settings, 'viewoptions' uses platform specific path
 separators, which means stored view sessions are not portable. See the
