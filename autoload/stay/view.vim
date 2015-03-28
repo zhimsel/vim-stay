@@ -19,11 +19,14 @@ function! stay#view#make(winnr) abort
     endif
     unlet! b:stay_atpos
     call s:doautocmd('User', 'BufStaySavePre')
+    let l:dopost = 1
     mkview
-    call s:doautocmd('User', 'BufStaySavePost')
-    call s:win.back()
     return 1
   finally
+    if get(l:, 'dopost', 0) is 1
+      call s:doautocmd('User', 'BufStaySavePost')
+    endif
+    call s:win.back()
     let &lazyredraw = l:lazyredraw
   endtry
 endfunction
@@ -37,20 +40,22 @@ function! stay#view#load(winnr) abort
   endif
 
   call s:doautocmd('User', 'BufStayLoadPre')
-  try   " significantly slows down buffer loads without noautocmd
+  try
+    " the `doautoall SessionLoadPost` in view session files significantly
+    " slows down buffer load, hence we suppress it with noautocmd
     noautocmd silent loadview
+    call s:doautocmd('SessionLoadPost')
+    if exists('b:stay_atpos')
+      call cursor(b:stay_atpos[0], b:stay_atpos[1])
+      silent! normal! zOzz
+    endif
+    return 1
   catch " silently return on errors
     return 0
+  finally
+    call s:doautocmd('User', 'BufStayLoadPost')
+    call s:win.back()
   endtry
-  call s:doautocmd('User', 'BufStayLoadPost')
-  call s:doautocmd('SessionLoadPost')
-
-  if exists('b:stay_atpos')
-    call cursor(b:stay_atpos[0], b:stay_atpos[1])
-    silent! normal! zOzz
-  endif
-  call s:win.back()
-  return 1
 endfunction
 
 " Private helper functions: {{{
