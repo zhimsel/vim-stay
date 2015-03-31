@@ -193,6 +193,9 @@ VIM-STAY TRIES TO PERSIST STATE FOR TEMPORARY FILES
   recognized as volatile, unless their 'buftype' is set to a non-file type.
   You can alleviate the issue by setting |b:stay_ignore| in affected buffers.
 
+Note: for performance reasons, 'backupskip' checking is skipped if Vim is
+compiled without |+wildignore| and |glob2regpat()| is not available.
+
 
 VIM-STAY TRIES TO PERSIST STATE FOR OTHER VOLATILE FILES
 
