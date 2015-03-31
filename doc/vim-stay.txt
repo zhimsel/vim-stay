@@ -178,7 +178,7 @@ recommended setting under |vim-stay-viewoptions|.
 VIM-STAY TRIES TO PERSIST STATE FOR TEMPORARY FILES
 
 - If the files are in a standard system temporary location, you should check
-  if it listed in 'backupskip' - vim-stray will ignore files in the hierarchy
+  if it listed in 'backupskip' - vim-stay will ignore files in the hierarchy
   of directories listed there.
 - Files in a temporary or cache directory not listed in 'backupskip' are not
   recognized as volatile, unless their 'buftype' is set to a non-file type.
