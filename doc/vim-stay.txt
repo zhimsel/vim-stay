@@ -9,9 +9,10 @@ Never lose your place in a buffer again	    	*vim-stay*
 1. Introduction				|vim-stay-introduction|
 2. Configuration			|vim-stay-configuration|
 3. Commands				|vim-stay-commands|
-4. Position specifications		|vim-stay-integration|
-5. Troubleshooting			|vim-stay-troubleshooting|
-6. Credits and license			|vim-stay-credits-license|
+4. Variables				|vim-stay-variables|
+5. Position specifications		|vim-stay-integration|
+6. Troubleshooting			|vim-stay-troubleshooting|
+7. Credits and license			|vim-stay-credits-license|
 
 {not available when |'compatible'| is set, or when Vim is compiled without
 |+autocmd| or without |+mksession|}
@@ -73,7 +74,15 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 		|g:volatile_ftypes|) to the plug-in defaults.
 
 ==============================================================================
-4. Integration					*vim-stay-integration*
+4. Variables					*vim-stay-variables*
+
+
+b:stay_loaded_view
+		Full path to the view session file last loaded for the current
+		buffer by vim-stay.
+
+==============================================================================
+5. Integration					*vim-stay-integration*
 
 
 INTEGRATION WITH 3RD PARTY PLUG-INS:
@@ -139,7 +148,7 @@ The advantage over hard-wiring support for vim-stay in your plug-in is that
 - the integration code will only be active if your user actually uses vim-stay.
 
 ==============================================================================
-5. Troubleshooting				*vim-stay-troubleshooting*
+6. Troubleshooting				*vim-stay-troubleshooting*
 
 
 MY CURSOR POSITION IS NOT PERSISTED
@@ -211,7 +220,7 @@ Please do not forget to list the steps to reproduce the issue as well as your
 Vim version and platform.
 
 ==============================================================================
-6. Credits and License			*vim-stay-credits-license*
+7. Credits and License			*vim-stay-credits-license*
 
 vim-stay is maintained by Martin Kopischke
 
