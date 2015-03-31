@@ -49,12 +49,21 @@ function! s:setup(defaults) abort
   " - 'stay' autocommand group (also used by integrations)
   augroup stay
     autocmd!
+
+    " |v:this_session| is not set for view sessions, so we roll our own (ignored
+    " when 'viewdir' is empty or set to the current directory hierarchy, as that
+    " would catch every filed sourced from there, not just view session files)
+    autocmd SourcePre ?*
+          \ if &viewdir !~? '\v^$|^\.' && stridx(expand('<afile>'), &viewdir) is 0 |
+          \   let b:stay_loaded_view = expand('<afile>') |
+          \ endif
+
     " default buffer handling
-    autocmd BufLeave,BufWinLeave ?*
+    autocmd BufLeave,BufWinLeave ?* nested
           \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
           \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
           \ endif
-    autocmd BufWinEnter ?*
+    autocmd BufWinEnter ?* nested
           \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
           \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
           \ endif

@@ -40,11 +40,18 @@ function! stay#view#load(winnr) abort
   endif
 
   call s:doautocmd('User', 'BufStayLoadPre')
+  " the `doautoall SessionLoadPost` in view session files significantly
+  " slows down buffer load, hence we suppress it...
+  let l:eventignore = &eventignore
+  set eventignore+=SessionLoadPost
   try
-    " the `doautoall SessionLoadPost` in view session files significantly
-    " slows down buffer load, hence we suppress it with noautocmd
-    noautocmd silent loadview
-    call s:doautocmd('SessionLoadPost')
+    silent loadview
+    " ... then fire it in a more targeted way
+    if exists('b:stay_loaded_view')
+      let &eventignore = l:eventignore
+      call s:doautocmd('SessionLoadPost')
+    endif
+    " respect position set by other scripts / plug-ins
     if exists('b:stay_atpos')
       call cursor(b:stay_atpos[0], b:stay_atpos[1])
       silent! normal! zOzz
@@ -53,6 +60,7 @@ function! stay#view#load(winnr) abort
   catch " silently return on errors
     return 0
   finally
+    let &eventignore = l:eventignore
     call s:doautocmd('User', 'BufStayLoadPost')
     call s:win.back()
   endtry
