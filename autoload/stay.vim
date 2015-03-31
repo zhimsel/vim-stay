@@ -34,10 +34,33 @@ endfunction
 " Check if {fname} is in a 'backupskip' location:
 " @signature:  stay#istemp({fname:String})
 " @returns:    Boolean
-function! stay#istemp(path) abort
-  let l:candidates = stay#shim#globpath(&backupskip, '**/'.fnamemodify(a:path, ':t'), 1, 1)
-  return index(l:candidates, a:path) isnot -1
-endfunction
+if exists('glob2regpat') " fastest option, Vim 7.4 with patch 668 only
+  function! stay#istemp(path) abort
+    for l:tempdir in split(&backupskip, '\m[^\\]\%(\\\\\)*,')
+      if a:path =~# glob2regpat(l:tempdir)
+        return 1
+      endif
+    endfor
+    return 0
+  endfunction
+elseif has('wildignore') " ~ slower by x 1.75
+  function! stay#istemp(path) abort
+    let l:wildignore = &wildignore
+    try
+      let &wildignore = &backupskip
+      return empty(expand(a:path))
+    finally
+      let &wildignore = l:wildignore
+    endtry
+  endfunction
+else
+  " assume Vim builds without |+wildignore| are performance constrained,
+  " which makes using |globpath()| filtering on 'backupskip' a non-option
+  " (it's about a 100 times slower than the 'wildignore' / |expand()| hack)
+  function! stay#istemp(path) abort
+    return -1
+  endfunction
+endif
 
 " Check if one of {bufnr}'s 'filetype' parts is on the {ftypes} List:
 " @signature:  stay#isftype({bufnr:Number}, {ftypes:List<String>})
