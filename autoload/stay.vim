@@ -34,7 +34,7 @@ endfunction
 " Check if {fname} is in a 'backupskip' location:
 " @signature:  stay#istemp({fname:String})
 " @returns:    Boolean
-if exists('glob2regpat') " fastest option, Vim 7.4 with patch 668 only
+if exists('*glob2regpat') " fastest option, Vim 7.4 with patch 668 only
   function! stay#istemp(path) abort
     for l:tempdir in split(&backupskip, '\m[^\\]\%(\\\\\)*,')
       if a:path =~# glob2regpat(l:tempdir)
