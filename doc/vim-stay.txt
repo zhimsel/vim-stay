@@ -78,8 +78,9 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 
 
 b:stay_loaded_view
-		Full path to the view session file last loaded for the current
-		buffer by vim-stay.
+		Full path to the last view session file loaded for the current
+		buffer. This value is not vim-stay specific and will only
+		change when the loaded view file's path changes.
 
 ==============================================================================
 5. Integration					*vim-stay-integration*
