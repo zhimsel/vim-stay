@@ -11,7 +11,7 @@ If you have wished Vim would be smarter about keeping your editing state, *vim-s
 
 ### Installation
 
-1. The old way: download and source the vimball from the [releases page][releases], then run `:helptags {dir}` on your runtimepath/doc directory. Or,
+1. The old way: download and source the vimball from the [releases page][releases], then run `:helptags {dir}` on your runtimepath/doc directory. Updating the plug-in via `:GetLatestVimScripts` is supported. Or,
 2. The plug-in manager way: using a git-based plug-in manager (Pathogen, Vundle, NeoBundle etc.), simply add `kopischke/vim-stay` to the list of plug-ins, source that and issue your manager's install command.
 
 ### Usage
