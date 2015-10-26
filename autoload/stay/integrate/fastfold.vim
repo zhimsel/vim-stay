@@ -21,7 +21,7 @@ endfunction
 function! stay#integrate#fastfold#save_pre() abort
   if index(split(&viewoptions, ','), 'folds') isnot -1
     let [l:fdmlocal, l:fdmorig] = [&l:foldmethod, get(w:, 'lastfdm', &l:foldmethod)]
-    if l:fdmorig isnot l:fdmlocal
+    if l:fdmlocal is# 'manual'
       noautocmd silent let &l:foldmethod = l:fdmorig
     endif
   endif
