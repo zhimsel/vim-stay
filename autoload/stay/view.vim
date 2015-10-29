@@ -20,7 +20,13 @@ function! stay#view#make(winnr) abort
     unlet! b:stay_atpos
     call s:doautocmd('User', 'BufStaySavePre')
     let l:dopost = 1
-    mkview
+    try
+      mkview
+    catch /^Vim\%((\a\+)\)\=:E190/  " Catch 'Cannot open X for writing'.
+      echohl WarningMsg
+      echom "stay: could not mkview:" v:exception
+      echohl None
+    endtry
     return 1
   finally
     if get(l:, 'dopost', 0) is 1
