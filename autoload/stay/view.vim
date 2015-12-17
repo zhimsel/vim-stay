@@ -16,6 +16,8 @@ function! stay#view#make(winnr) abort
     unlet! b:stay_atpos
     mkview
     return 1
+  catch " silently return on errors
+    return 0
   finally
     call s:doautocmd('User', 'BufStaySavePost')
     call s:win.back()
