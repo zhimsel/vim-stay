@@ -20,7 +20,7 @@ function! stay#ispersistent(bufnr, volatile_ftypes) abort
   let l:bufpath = expand('#'.a:bufnr.':p')
   return bufexists(a:bufnr)
     \ && !empty(l:bufpath)
-    \ && getbufvar(a:bufnr, 'stay_ignore', 0) isnot 1
+    \ && getbufvar(a:bufnr, 'stay_ignore') isnot 1
     \ && getbufvar(a:bufnr, '&buflisted') is 1
     \ && index(['', 'acwrite'], getbufvar(a:bufnr, '&buftype')) isnot -1
     \ && getbufvar(a:bufnr, '&previewwindow') isnot 1
