@@ -63,7 +63,7 @@ function! s:setup(defaults) abort
           \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
           \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
           \ endif
-    autocmd BufWinEnter ?* nested
+    autocmd BufWinEnter,FileChangedShellPost ?* nested
           \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
           \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
           \ endif
