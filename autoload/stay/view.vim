@@ -1,5 +1,9 @@
 " AUTOLOAD FUNCTION LIBRARY FOR VIM-STAY
 " View session handling functions
+if &compatible || !has('autocmd') || !has('mksession') || v:version < 700
+  finish
+endif
+
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
