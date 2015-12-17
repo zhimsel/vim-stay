@@ -45,6 +45,13 @@ function! stay#view#load(winnr) abort
     return 0
   endif
 
+  " ensure we only react to a fresh view load without clobbering
+  " b:stay_loaded_view (which is part of the API)
+  if exists('b:stay_loaded_view')
+    let l:stay_loaded_view = b:stay_loaded_view
+    unlet b:stay_loaded_view
+  endif
+
   call s:doautocmd('User', 'BufStayLoadPre')
   " the `doautoall SessionLoadPost` in view session files significantly
   " slows down buffer load, hence we suppress it...
@@ -74,6 +81,10 @@ function! stay#view#load(winnr) abort
     let v:errmsg = 'vim-stay error '.s:exception2errmsg(v:exception)
     return -1
   finally
+    " restore stale b:stay_loaded_view for API usage
+    if !exists('b:stay_loaded_view') && exists('l:stay_loaded_view')
+      let b:stay_loaded_view = l:stay_loaded_view
+    endif
     let &eventignore = l:eventignore
     call s:doautocmd('User', 'BufStayLoadPost')
     call s:win.back()
