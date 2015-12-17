@@ -1,6 +1,6 @@
 " STAY EVAL SHIM MODULE
 " Are these Vim patch levels, my dear?
-if v:version < 700
+if &compatible || v:version < 700
   finish
 endif
 

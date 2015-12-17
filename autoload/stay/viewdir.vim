@@ -1,5 +1,9 @@
 " AUTOLOAD FUNCTION LIBRARY FOR VIM-STAY
 " 'viewdir' handling functions
+if &compatible || v:version < 700
+  finish
+endif
+
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
