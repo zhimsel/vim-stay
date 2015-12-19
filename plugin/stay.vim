@@ -16,6 +16,7 @@ let s:defaults.volatile_ftypes = [
   \ 'gitcommit', 'gitrebase', 'gitsendmail',
   \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
   \ 'svn', 'cvs', 'cvsrc', 'bzr',
+  \ 'diff',
   \ ]
 
 " Loader for 3rd party integrations:
