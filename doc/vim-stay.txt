@@ -177,6 +177,10 @@ local working directory. This can be a bit disorienting at first, but it is by
 (Vim's) design. If this really irks you, you may be able to work around it
 using vim-stay's autocommand API (see |vim-stay-autocommands|).
 
+For an example, see
+
+	https://github.com/kopischke/vim-stay/issues/10#issuecomment-83691770.
+
 
 VIM-STAY MESSES UP OPTION X / BUFFER VARIABLE Y
 
