@@ -57,6 +57,17 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 >
 	let g:volatile_ftypes += ['foo', 'bar']
 <
+
+
+SKIPPING SESSION LOAD AUTOCMDs:				*g:stay_skip_sessionload*
+
+To speed up the loading of persisted buffers by vim-stay, add
+
+  g:stay_skip_sessionload = 1
+
+to your `vimrc`. However, this breaks plug-ins that rely on the triggering
+of the `SessionLoadPost` autocmd.
+
 ==============================================================================
 3. Commands					*vim-stay-commands*
 
@@ -149,6 +160,15 @@ The advantage over hard-wiring support for vim-stay in your plug-in is that
 
 ==============================================================================
 6. Troubleshooting				*vim-stay-troubleshooting*
+
+
+LOADING OF FILES SLOWED DOWN A LOT SINCE USING VIM-STAY
+
+Try adding
+
+  g:stay_skip_sessionload = 1
+
+to your `vimrc`. See |vim-stay-viewoptions|.
 
 
 MY CURSOR POSITION IS NOT PERSISTED

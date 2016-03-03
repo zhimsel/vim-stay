@@ -43,7 +43,9 @@ function! stay#view#load(winnr) abort
   " the `doautoall SessionLoadPost` in view session files significantly
   " slows down buffer load, hence we suppress it...
   let l:eventignore = &eventignore
-  set eventignore+=SessionLoadPost
+  if exists('g:stay_skip_sessionload') && g:stay_skip_sessionload is 1
+    set eventignore+=SessionLoadPost
+  endif
   try
     silent loadview
     " ... then fire it in a more targeted way
