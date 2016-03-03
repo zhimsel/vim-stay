@@ -15,6 +15,9 @@ function! stay#integrate#fastfold#setup() abort
   autocmd User BufStaySavePre  unsilent call stay#integrate#fastfold#save_pre()
   autocmd User BufStaySavePost unsilent call stay#integrate#fastfold#save_post()
   autocmd User BufStayLoadPost,BufStaySavePost let b:isPersistent = 1
+  if exists('g:stay_skip_sessionload') && g:stay_skip_sessionload is 1
+    autocmd User BufStayLoadPost doautoall SessionLoadPost
+  endif
 endfunction
 
 " - on User event 'BufStaySavePre': restore original 'foldmethod'
