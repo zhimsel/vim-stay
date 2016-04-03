@@ -68,6 +68,9 @@ function! stay#view#load(winnr) abort
     let v:errmsg  = "vim-stay could not read the view session file! "
     let v:errmsg .= "Vim error ".s:exception2errmsg(v:exception)
     return -1
+  catch /\vE%(35[0-2]|490)/ " fold errors
+    let v:errmsg = 'vim-stay error '.s:exception2errmsg(v:exception)
+    return 0
   catch " other errors
     let v:errmsg = 'vim-stay error '.s:exception2errmsg(v:exception)
     return -1
