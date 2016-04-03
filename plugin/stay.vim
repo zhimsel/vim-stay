@@ -51,11 +51,9 @@ function! s:setup(defaults) abort
   augroup stay
     autocmd!
 
-    " |v:this_session| is not set for view sessions, so we roll our own (ignored
-    " when 'viewdir' is empty or set to the current directory hierarchy, as that
-    " would catch every filed sourced from there, not just view session files)
+    " |v:this_session| is not set for view sessions, so we roll our own
     autocmd SourcePre ?*
-          \ if &viewdir !~? '\v^$|^\.' && stridx(expand('<afile>'), &viewdir) is 0 |
+          \ if stay#isviewfile(expand('<afile>')) is 1 |
           \   let b:stay_loaded_view = expand('<afile>') |
           \ endif
 

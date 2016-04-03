@@ -76,6 +76,32 @@ function! stay#isftype(bufnr, ftypes) abort
   return !empty(filter(l:candidates, 'index(a:ftypes, v:val) isnot -1'))
 endfunction
 
+" Check if {file} is a view session file:
+" @signature:  stay#isviewfile({file:String})
+" @returns:    Boolean (-1 if unable to check)
+function! stay#isviewfile(file) abort
+  " check if the file is located in 'viewdir', unless that option is set to the
+  " local working directory or a subdirectory of the same
+  if stridx(&viewdir, '.') isnot 0
+    " account for misformatted directory specification and spaces
+    let l:viewdir = substitute(&viewdir, '\v[/\\]*$', '', '')
+    let l:viewdir = substitute(l:viewdir, '\v\\@<!(\\\\)*\\ ', ' ', 'g')
+    return stridx(a:file, l:viewdir) is 0
+  endif
+
+  " look into the file for signature commands:
+  " - `doautoall SessionLoadPost` is characteristic of views and session files
+  " - `unlet SessionLoad` is exclusive to session files
+  let l:s_event = '\C\vdoauto%[all]!?%(\s+<nomodeline>)?%(\s+\S+)?\s+SessionLoadPost'
+  let l:s_load  = '\C\unl%[et]!?\s+SessionLoad'
+  try
+    let l:tail = readfile(a:file, -5)
+    return match(l:tail, l:s_event) isnot -1 && match(l:tail, l:s_load) is -1
+  catch
+  endtry
+  return -1
+endfunction
+
 let &cpoptions = s:cpoptions
 unlet! s:cpoptions
 
