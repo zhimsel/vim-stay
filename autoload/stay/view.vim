@@ -7,27 +7,18 @@ set cpoptions&vim
 " @signature:  stay#view#make({winnr:Number})
 " @returns:    Boolean
 function! stay#view#make(winnr) abort
-  if a:winnr is -1
+  if a:winnr is -1 || !s:win.goto(a:winnr)
     return 0
   endif
 
+  call s:doautocmd('User', 'BufStaySavePre')
   try
-    let l:lazyredraw = &lazyredraw
-    set lazyredraw
-    if !s:win.goto(a:winnr)
-      return 0
-    endif
     unlet! b:stay_atpos
-    call s:doautocmd('User', 'BufStaySavePre')
-    let l:dopost = 1
     mkview
     return 1
   finally
-    if get(l:, 'dopost', 0) is 1
-      call s:doautocmd('User', 'BufStaySavePost')
-    endif
+    call s:doautocmd('User', 'BufStaySavePost')
     call s:win.back()
-    let &lazyredraw = l:lazyredraw
   endtry
 endfunction
 
