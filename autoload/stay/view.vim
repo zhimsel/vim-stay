@@ -61,9 +61,8 @@ function! stay#view#load(winnr) abort
     if exists('b:stay_atpos')
       call cursor(b:stay_atpos[0], b:stay_atpos[1])
       silent! normal! zOzz
-      return 1
     endif
-    return 0
+    return exists('b:stay_loaded_view')
   catch /\vE48[45]/ " no read access to existing view file
     let v:errmsg  = "vim-stay could not read the view session file! "
     let v:errmsg .= "Vim error ".s:exception2errmsg(v:exception)
