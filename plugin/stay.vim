@@ -59,14 +59,32 @@ function! s:setup(defaults) abort
           \ endif
 
     " default buffer handling
-    autocmd BufLeave,BufWinLeave ?* nested
-          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-          \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
-          \ endif
-    autocmd BufWinEnter ?* nested
-          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-          \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
-          \ endif
+    " note that as all in things Vim, buffer window handling in |BufLeave| and
+    " |BufWinLeave| autocommands is slightly demented:
+    " - when no window is created on leave, |winnr()| points to the
+    "   window |<abuf>| is open in, as expected; however,
+    " - when a window is created on leave, |winnr()| points to the new window,
+    "   and |<abuf>|'s window is `winnr('#')` (this is what the |BufWinLeave|
+    "   help means by 'When this autocommand is executed, the current buffer
+    "   "%" may be different from the buffer being unloaded "<afile>"', it
+    "   seems. Good luck parsing this correctly.)
+    autocmd BufWinLeave ?*
+    \ let s:bufnr = str2nr(expand('<abuf>')) |
+    \ if stay#ispersistent(s:bufnr, g:volatile_ftypes) |
+    \   let s:wincnt = getbufvar(s:bufnr, 'stay_wincount') |
+    \   let s:wincnt = empty(s:wincnt) ? stay#wincount() : s:wincnt |
+    \   let s:winnr  =
+    \     s:wincnt[0] < tabpagenr('$') || s:wincnt[1] < winnr('$') ?
+    \     winnr('#') : winnr() |
+    \   call stay#view#make(s:winnr) |
+    \ endif |
+    \ unlet! s:bufnr s:winnr s:wincnt
+
+    autocmd BufWinEnter ?*
+    \ let b:stay_wincount = stay#wincount() |
+    \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
+    \   call stay#view#load(winnr()) |
+    \ endif
 
     " generic, extensible 3rd party integration
     call s:integrate()

@@ -72,6 +72,13 @@ function! stay#isftype(bufnr, ftypes) abort
   return !empty(filter(l:candidates, 'index(a:ftypes, v:val) isnot -1'))
 endfunction
 
+" Get the current tab page and window count:
+" @signature:  stay#wincount()
+" @returns:    List<{tabcount:Number}, {wincount:Number}>
+function! stay#wincount() abort
+  return [tabpagenr('$'), winnr('$')]
+endfunction
+
 let &cpoptions = s:cpoptions
 unlet! s:cpoptions
 
