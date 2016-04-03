@@ -13,10 +13,10 @@ set cpoptions&vim
 let s:defaults = {}
 " - bona fide file types that should never be persisted
 let s:defaults.volatile_ftypes = [
-  \ 'gitcommit', 'gitrebase', 'gitsendmail',
-  \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
-  \ 'svn', 'cvs', 'cvsrc', 'bzr',
-  \ ]
+\ 'gitcommit', 'gitrebase', 'gitsendmail',
+\ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
+\ 'svn', 'cvs', 'cvsrc', 'bzr',
+\ ]
 
 " Loader for 3rd party integrations:
 function! s:integrate() abort
@@ -54,9 +54,9 @@ function! s:setup(defaults) abort
     " when 'viewdir' is empty or set to the current directory hierarchy, as that
     " would catch every filed sourced from there, not just view session files)
     autocmd SourcePre ?*
-          \ if &viewdir !~? '\v^$|^\.' && stridx(expand('<afile>'), &viewdir) is 0 |
-          \   let b:stay_loaded_view = expand('<afile>') |
-          \ endif
+    \ if &viewdir !~? '\v^$|^\.' && stridx(expand('<afile>'), &viewdir) is 0 |
+    \   let b:stay_loaded_view = expand('<afile>') |
+    \ endif
 
     " default buffer handling
     " note that as all in things Vim, buffer window handling in |BufLeave| and
@@ -92,9 +92,9 @@ function! s:setup(defaults) abort
 
   " - ex commands
   command! -bang -nargs=? CleanViewdir
-        \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
+  \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
   command! -bang -nargs=0 StayReload
-        \ call <SID>setup(expand('<bang>') is '!')
+  \ call <SID>setup(expand('<bang>') is '!')
 endfunction
 
 call s:setup(0)
