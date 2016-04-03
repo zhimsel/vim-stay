@@ -20,7 +20,7 @@ function! stay#view#make(winnr) abort
   call s:doautocmd('User', 'BufStaySavePre')
   try
     unlet! b:stay_atpos
-    mkview
+    silent mkview
     return 1
   catch /\vE%(166|190|212)/ " no write access to existing view file
     let v:errmsg  = "vim-stay could not write the view session file! "
