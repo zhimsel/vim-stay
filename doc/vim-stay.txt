@@ -206,6 +206,15 @@ type by opening a support issue (or even better, a PR) at
 	https://github.com/kopischke/vim-stay/issues
 
 
+VIM-STAY SAYS IT CANNOT READ / WRITE THE VIEW FILE
+
+You might have opened the file triggering this with elevated privileges before
+(e.g. using `sudo` on Unix). This will result in the view session file created
+by vim-stay having elevated privileges too, thus not being writable at a lower
+privilege level. Try cleaning your 'viewdir' with a suitable OS tool operating
+at the necessary privilege level.
+
+
 MY VIEW DIRECTORY IS A FESTERING MESS
 
 That is a consequence of Vim's view session design. To quote |loadview|:
