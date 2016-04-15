@@ -5,9 +5,11 @@ set cpoptions&vim
 
 " Make a persistent view for window {winnr}:
 " @signature:  stay#view#make({winnr:Number})
-" @returns:    Boolean
+" @returns:    Boolean (-1 on error)
+" @notes:      Exceptions are suppressed, but written to |v:errmsg|
 function! stay#view#make(winnr) abort
   if a:winnr is -1 || !s:win.goto(a:winnr)
+    let v:errmsg = "vim-stay invalid window number: ".a:winnr
     return 0
   endif
 
@@ -17,7 +19,8 @@ function! stay#view#make(winnr) abort
     mkview
     return 1
   catch " silently return on errors
-    return 0
+    let v:errmsg = 'vim-stay error '.s:exception2errmsg(v:exception)
+    return -1
   finally
     call s:doautocmd('User', 'BufStaySavePost')
     call s:win.back()
@@ -26,9 +29,11 @@ endfunction
 
 " Load a persistent view for window {winnr}:
 " @signature:  stay#view#load({winnr:Number})
-" @returns:    Boolean
+" @returns:    Boolean (-1 on error)
+" @notes:      Exceptions are suppressed, but written to |v:errmsg|
 function! stay#view#load(winnr) abort
   if a:winnr is -1 || !s:win.goto(a:winnr)
+    let v:errmsg = "vim-stay invalid window number: ".a:winnr
     return 0
   endif
 
@@ -48,10 +53,12 @@ function! stay#view#load(winnr) abort
     if exists('b:stay_atpos')
       call cursor(b:stay_atpos[0], b:stay_atpos[1])
       silent! normal! zOzz
+      return 1
     endif
-    return 1
-  catch " silently return on errors
     return 0
+  catch " silently return on other errors
+    let v:errmsg = 'vim-stay error '.s:exception2errmsg(v:exception)
+    return -1
   finally
     let &eventignore = l:eventignore
     call s:doautocmd('User', 'BufStayLoadPost')
@@ -94,6 +101,11 @@ function! s:doautocmd(event, ...) abort
   if exists('#'.join(l:event, '#'))
     execute 'doautocmd <nomodeline>' join(l:event, ' ')
   endif
+endfunction
+
+" - extract the error message from an {exception}
+function! s:exception2errmsg(exception) abort
+  return substitute(a:exception, '\v^.{-}:\zeE\d.+$', '', '')
 endfunction " }}}
 
 let &cpoptions = s:cpoptions
