@@ -18,7 +18,11 @@ function! stay#view#make(winnr) abort
     unlet! b:stay_atpos
     mkview
     return 1
-  catch " silently return on errors
+  catch /\vE%(166|190|212)/ " no write access to existing view file
+    let v:errmsg  = "vim-stay could not write the view session file! "
+    let v:errmsg .= "Vim error ".s:exception2errmsg()
+    return -1
+  catch " other errors
     let v:errmsg = 'vim-stay error '.s:exception2errmsg(v:exception)
     return -1
   finally
@@ -56,7 +60,11 @@ function! stay#view#load(winnr) abort
       return 1
     endif
     return 0
-  catch " silently return on other errors
+  catch /\vE48[45]/ " no read access to existing view file
+    let v:errmsg  = "vim-stay could not read the view session file! "
+    let v:errmsg .= "Vim error ".s:exception2errmsg()
+    return -1
+  catch " other errors
     let v:errmsg = 'vim-stay error '.s:exception2errmsg(v:exception)
     return -1
   finally
