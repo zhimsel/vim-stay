@@ -61,9 +61,9 @@ else
   " assume Vim builds without |+wildignore| are performance constrained,
   " which makes using |globpath()| filtering on 'backupskip' a non-option
   " (it's about a 100 times slower than the 'wildignore' / |expand()| hack)
-  function! stay#istemp(path) abort
+  function! stay#istemp(path) abort " @vimlint(EVL103, 1) unused argument {path}
     return -1
-  endfunction
+  endfunction " @vimlint(EVL103, 0)
 endif
 
 " Check if one of {bufnr}'s 'filetype' parts is on the {ftypes} List:
