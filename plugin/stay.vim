@@ -31,13 +31,12 @@ function! s:ViewSourced(file) abort
 endfunction
 
 " conditionally create a view session file for {bufnr} in {winid}
-function! s:MakeView(event, bufnr, winid) abort
-  " do not create a view session if WinLeave did so already
-  if a:event is 'BufWinLeave'
-    let l:leftat = getbufvar(a:bufnr, 'stay_leftwin')
-    if empty(l:leftat) || localtime() - l:leftat <= 1
-      return 0
-    endif
+function! s:MakeView(stage, bufnr, winid) abort
+  " do not create a view session if a call with a lower {stage} number
+  " did so recently (currently hardwired to 1 second or less ago)
+  let l:left = getbufvar(a:bufnr, 'stay_left')
+  if a:stage > 1 && !empty(l:left) && localtime() - get(l:left, a:stage-1, 0) <= 1
+    return 0
   endif
 
   if pumvisible() ||
@@ -48,7 +47,7 @@ function! s:MakeView(event, bufnr, winid) abort
 
   let l:done = stay#view#make(a:winid)
   if l:done is -1 | echomsg v:errmsg | endif
-  call setbufvar(a:bufnr, 'stay_leftwin', a:event is 'WinLeave' ? localtime() : '')
+  call setbufvar(a:bufnr, 'stay_left', extend(l:left, {string(a:stage): localtime()}))
   return l:done
 endfunction
 
@@ -122,15 +121,20 @@ function! s:Setup(force) abort
       autocmd!
       " view session file loading recognition
       autocmd SourcePre ?* call s:ViewSourced(expand('<afile>'))
-      " make sure the view is always current
-      autocmd WinLeave    ?* nested
-      \ call s:MakeView('WinLeave', str2nr(expand('<abuf>')), stay#win#getid(winnr()))
-      " catch hiding of buffers and quitting
-      autocmd BufWinLeave ?* nested
-      \ call s:MakeView('BufWinLeave', str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+
       " ensure a newly visible buffer loads its view
       autocmd BufWinEnter ?* nested
       \ call s:LoadView(str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+      " make sure the view is always in sync with window state
+      autocmd WinLeave    ?* nested
+      \ call s:MakeView(2, str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+      " catch hiding of buffers and quitting
+      autocmd BufWinLeave ?* nested
+      \ call s:MakeView(3, str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+      " catch saving and renaming of buffers
+      autocmd BufFilePost,BufWritePost ?* nested
+      \ call s:MakeView(1, str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+
       " preserve views on file reloads
       autocmd BufEnter,BufWinEnter ?*
       \ call s:NoAutoread(str2nr(expand('<abuf>')))
