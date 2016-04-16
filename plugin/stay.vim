@@ -43,7 +43,8 @@ endfunction
 
 " conditionally load view session file for {bufnr} in {winid}
 function! s:LoadView(bufnr, winid) abort
-  if !pumvisible() &&
+  if !exists('g:SessionLoad') &&
+  \ !pumvisible() &&
   \ stay#isviewwin(a:winid) &&
   \ stay#ispersistent(a:bufnr, g:volatile_ftypes)
     if stay#view#load(a:winid) is -1
