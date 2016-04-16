@@ -68,10 +68,13 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 		Note: this will ask for confirmation before deleting files.
 		Use the bang variant to bypass the confirmation prompt.
 
-:StayReload[!]	Re-source the plug-in, resetting autocommands and reloading
-		all integration modules. The bang variant will also reset
-		global configuration variables (currently, only
-		|g:volatile_ftypes|) to the plug-in defaults.
+:StayReload[!]	Load new |vim-stay-plugin-api| integrations.
+
+		The bang variant will re-load all integrations (not just new
+		ones), clear and re-define the core autocommands as well as
+		all |vim-stay-commands| and reset all global configuration
+		variables (currently, only |g:volatile_ftypes|) to the plug-in
+		defaults.
 
 ==============================================================================
 4. Variables					*vim-stay-variables*
@@ -139,9 +142,9 @@ to 3rd parties. Add a file
 containing a `stay#integrate#yourplugin#setup()` |autoload| function to your
 plug-in. Any function with that signature found in 'runtimepath' when vim-stay
 loads will be executed. You can set up autocommands in there (which will
-automatically be added to the `stay` autocommand group), optionally leveraging
-vim-stay's autocommand API (|vim-stay-autocommands|), or add to the volatile
-'filetype' list (|g:volatile_ftypes|).
+automatically be added to the `stay_integrate` autocommand group), optionally
+leveraging vim-stay's autocommand API (|vim-stay-autocommands|), or add to the
+volatile 'filetype' list (|g:volatile_ftypes|).
 
 The advantage over hard-wiring support for vim-stay in your plug-in is that
 - the integration will be set up when your user uses vim-stay regardless of
