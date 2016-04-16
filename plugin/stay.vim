@@ -15,11 +15,10 @@ set cpoptions&vim
 let s:defaults = {}
 " - bona fide file types that should never be persisted
 let s:defaults.volatile_ftypes = [
-  \ 'gitcommit', 'gitrebase', 'gitsendmail',
-  \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
-  \ 'svn', 'cvs', 'cvsrc', 'bzr',
-  \ ]
-" 3rd party integrations:
+\ 'gitcommit', 'gitrebase', 'gitsendmail',
+\ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
+\ 'svn', 'cvs', 'cvsrc', 'bzr',
+\ ]
 let s:integrations = [] " }}}
 
 " PLUG-IN MACHINERY {{{
