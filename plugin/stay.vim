@@ -60,13 +60,13 @@ function! s:setup(defaults) abort
     " default buffer handling
     autocmd BufLeave,BufWinLeave ?* nested
           \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-          \   if stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) is -1 |
+          \   if stay#view#make(stay#win#getid(winnr())) is -1 |
           \     echomsg v:errmsg |
           \   endif |
           \ endif
     autocmd BufWinEnter ?* nested
           \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-          \   if stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) is -1 |
+          \   if stay#view#load(stay#win#getid(winnr())) is -1 |
           \     echomsg v:errmsg |
           \   endif |
           \ endif

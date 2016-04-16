@@ -7,13 +7,14 @@ endif
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
-" Make a persistent view for window {winnr}:
-" @signature:  stay#view#make({winnr:Number})
+" Make a persistent view for window ID {winid}:
+" @signature:  stay#view#make({winid:Number})
 " @returns:    Boolean (-1 on error)
 " @notes:      Exceptions are suppressed, but written to |v:errmsg|
-function! stay#view#make(winnr) abort
-  if a:winnr is -1 || !s:win.goto(a:winnr)
-    let v:errmsg = "vim-stay invalid window number: ".a:winnr
+function! stay#view#make(winid) abort
+  let l:curwinid = stay#win#getid()
+  if s:sneak2winid(a:winid) isnot 1
+    let v:errmsg = "vim-stay could not switch to window ID: ".a:winid
     return 0
   endif
 
@@ -31,17 +32,18 @@ function! stay#view#make(winnr) abort
     return -1
   finally
     call s:doautocmd('User', 'BufStaySavePost')
-    call s:win.back()
+    call s:sneak2winid(l:curwinid)
   endtry
 endfunction
 
-" Load a persistent view for window {winnr}:
-" @signature:  stay#view#load({winnr:Number})
+" Load a persistent view for window ID {winid}:
+" @signature:  stay#view#load({winid:Number})
 " @returns:    Boolean (-1 on error)
 " @notes:      Exceptions are suppressed, but written to |v:errmsg|
-function! stay#view#load(winnr) abort
-  if a:winnr is -1 || !s:win.goto(a:winnr)
-    let v:errmsg = "vim-stay invalid window number: ".a:winnr
+function! stay#view#load(winid) abort
+  let l:curwinid = stay#win#getid()
+  if s:sneak2winid(a:winid) isnot 1
+    let v:errmsg = "vim-stay could not switch to window ID: ".a:winid
     return 0
   endif
 
@@ -87,35 +89,11 @@ function! stay#view#load(winnr) abort
     endif
     let &eventignore = l:eventignore
     call s:doautocmd('User', 'BufStayLoadPost')
-    call s:win.back()
+    call s:sneak2winid(l:curwinid)
   endtry
 endfunction
 
 " Private helper functions: {{{
-" - window navigation stack
-let s:win = {'stack': []}
-
-function! s:win.activate(winnr) abort
-  if winnr() isnot a:winnr
-    execute 'noautocmd keepjumps keepalt silent' a:winnr.'wincmd w'
-  endif
-endfunction
-
-function! s:win.goto(winnr) abort
-  let l:oldwinnr = winnr()
-  call self.activate(a:winnr)
-  call add(self.stack, l:oldwinnr)
-  return winnr() is a:winnr
-endfunction
-
-function! s:win.back() abort
-  if len(self.stack) > 0
-    let l:towinnr = remove(self.stack, -1)
-    call self.activate(l:towinnr)
-  endif
-  return exists('l:towinnr') && winnr() is l:towinnr
-endfunction
-
 " - apply {event} autocommands, optionally matching pattern {a:1},
 "   but only if there are any
 "   1. avoids flooding message history with "No matching autocommands"
@@ -126,6 +104,11 @@ function! s:doautocmd(event, ...) abort
   if exists('#'.join(l:event, '#'))
     execute 'doautocmd <nomodeline>' join(l:event, ' ')
   endif
+endfunction
+
+" - activate a window ID without leaving a trail
+function! s:sneak2winid(id) abort
+  silent noautocmd keepalt keepjumps return stay#win#gotoid(a:id)
 endfunction
 
 " - extract the error message from an {exception}
