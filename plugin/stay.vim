@@ -32,7 +32,7 @@ endfunction
 
 " conditionally create a view session file for {bufnr} in {winid}
 function! s:MakeView(bufnr, winid) abort
-  if stay#ispersistent(a:bufnr, g:volatile_ftypes)
+  if stay#isviewwin(a:winid) && stay#ispersistent(a:bufnr, g:volatile_ftypes)
     if stay#view#make(a:winid) is -1
       echomsg v:errmsg
     endif
@@ -41,7 +41,7 @@ endfunction
 
 " conditionally load view session file for {bufnr} in {winid}
 function! s:LoadView(bufnr, winid) abort
-  if stay#ispersistent(a:bufnr, g:volatile_ftypes)
+  if stay#isviewwin(a:winid) && stay#ispersistent(a:bufnr, g:volatile_ftypes)
     if stay#view#load(a:winid) is -1
       echomsg v:errmsg
     endif

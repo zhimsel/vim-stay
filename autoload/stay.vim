@@ -7,32 +7,45 @@ endif
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
-" Check if buffer {bufnr} is persistent:
+" Check if the buffer {bufnr} is persistent:
 " @signature:  stay#ispersistent({bufnr:Number}, {volatile_ftypes:List<String>})
 " @returns:    Boolean
 " @notes:      the persistence heuristics are
-"              - buffer must be listed
 "              - buffer name must not be empty
+"              - buffer must not be marked as ignored
+"              - buffer must be listed
 "              - buffer must be of ordinary or "acwrite" 'buftype'
-"              - not a preview window
-"              - not a diff window
 "              - buffer's 'bufhidden' must be empty or "hide"
 "              - buffer must map to a readable file
 "              - buffer must not be of a volatile file type
 "              - buffer file must not be located in a known temp dir
 function! stay#ispersistent(bufnr, volatile_ftypes) abort
-  let l:bufpath = expand('#'.a:bufnr.':p')
-  return bufexists(a:bufnr)
-    \ && !empty(l:bufpath)
-    \ && getbufvar(a:bufnr, 'stay_ignore') isnot 1
-    \ && getbufvar(a:bufnr, '&buflisted') is 1
-    \ && index(['', 'acwrite'], getbufvar(a:bufnr, '&buftype')) isnot -1
-    \ && getbufvar(a:bufnr, '&previewwindow') isnot 1
-    \ && getbufvar(a:bufnr, '&diff') isnot 1
-    \ && index(['', 'hide'], getbufvar(a:bufnr, '&bufhidden')) isnot -1
-    \ && filereadable(l:bufpath)
-    \ && stay#isftype(a:bufnr, a:volatile_ftypes) isnot 1
-    \ && stay#istemp(l:bufpath) isnot 1
+  let l:bufpath = expand('#'.a:bufnr.':p') " empty on invalid buffer numbers
+  return
+  \ !empty(l:bufpath) &&
+  \ getbufvar(a:bufnr, 'stay_ignore') isnot 1 &&
+  \ getbufvar(a:bufnr, '&buflisted') is 1 &&
+  \ index(['', 'acwrite'], getbufvar(a:bufnr, '&buftype')) isnot -1 &&
+  \ index(['', 'hide'], getbufvar(a:bufnr, '&bufhidden')) isnot -1 &&
+  \ filereadable(l:bufpath) &&
+  \ stay#isftype(a:bufnr, a:volatile_ftypes) isnot 1 &&
+  \ stay#istemp(l:bufpath) isnot 1
+endfunction
+
+" Check if the window with ID {winid} is eligible for view saving:
+" @signature:  stay#isviewwin({winid:Number})
+" @returns:    Boolean
+" @notes:      a window is considered eligible when
+"              - it exists
+"              - it is not a preview window
+"              - it is not a diff window
+function! stay#isviewwin(winid) abort
+  let [l:tabnr, l:winnr] = stay#win#id2tabwin(a:winid)
+  return
+  \ l:tabnr isnot 0 &&
+  \ l:winnr isnot 0 &&
+  \ gettabwinvar(l:tabnr, l:winnr, '&previewwindow') isnot 1 &&
+  \ gettabwinvar(l:tabnr, l:winnr, '&diff') isnot 1
 endfunction
 
 " Check if {fname} is in a 'backupskip' location:
