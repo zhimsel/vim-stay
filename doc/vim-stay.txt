@@ -99,7 +99,7 @@ Out of the box, vim-stay integrates with the following plug-ins:
 If you'd like vim-stay to integrate with other position-setting or view
 management plug-ins, open an issue or a PR at
 
-    https://github.com/kopischke/vim-stay/issues
+	https://github.com/kopischke/vim-stay/issues
 
 If the plug-in in question is one you own or contribute to, see
 |vim-stay-plugin-api| instead.
@@ -127,7 +127,7 @@ a certain file type.
 
 3. Autocommand API				*vim-stay-autocommands*
 
-vim-stray triggers two |User| autocommand events each when loading or saving
+vim-stay triggers two |User| autocommand events each when loading or saving
 state: *BufStayLoadPre* before loading a view session and *BufStayLoadPost*
 after loading it, *BufStaySavePre* before saving a view session and
 *BufStaySavePost* after.
