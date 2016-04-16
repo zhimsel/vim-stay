@@ -5,7 +5,7 @@
 
 ## Stay at my cursor, boy!
 
-*vim-stay* adds automated view session creation and restoration whenever editing a buffer, across Vim sessions and window life cycles. It also alleviates Vim's tendency to lose view state when cycling through buffers (via `argdo`, `bufdo` et al.). It is smart about which buffers should be persisted and which should not, making the procedure painless and invisible.
+*vim-stay* adds automated view session creation and restoration whenever editing a buffer, across Vim sessions and window life cycles. It also alleviates Vim's tendency to lose view state when cycling through buffers (via `argdo`, `bufdo` et al.) and when a buffer displayed in several windows is changed outside Vim.. It is smart about which buffers should be persisted and which should not, making the procedure painless and invisible.
 
 If you have wished Vim would be smarter about keeping your editing state, *vim-stay* is for you.
 

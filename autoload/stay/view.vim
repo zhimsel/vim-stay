@@ -11,7 +11,7 @@ set cpoptions&vim
 " @signature:  stay#view#make({winid:Number})
 " @returns:    Boolean (-1 on error)
 " @notes:      Exceptions are suppressed, but written to |v:errmsg|
-function! stay#view#make(winid) abort
+function! stay#view#make(winid, ...) abort
   let l:curwinid = stay#win#getid()
   if s:sneak2winid(a:winid) isnot 1
     let v:errmsg = "vim-stay could not switch to window ID: ".a:winid
@@ -21,7 +21,9 @@ function! stay#view#make(winid) abort
   call s:doautocmd('User', 'BufStaySavePre')
   try
     unlet! b:stay_atpos
-    silent mkview
+    let l:idx = get(a:, 1, 0)
+    let l:cmd = ['mkview'] + (l:idx > 0 ? [l:idx] : [])
+    silent execute join(l:cmd, ' ')
     return 1
   catch /\vE%(166|190|212)/ " no write access to existing view file
     let v:errmsg  = "vim-stay could not write the view session file! "
@@ -40,7 +42,7 @@ endfunction
 " @signature:  stay#view#load({winid:Number})
 " @returns:    Boolean (-1 on error)
 " @notes:      Exceptions are suppressed, but written to |v:errmsg|
-function! stay#view#load(winid) abort
+function! stay#view#load(winid, ...) abort
   let l:curwinid = stay#win#getid()
   if s:sneak2winid(a:winid) isnot 1
     let v:errmsg = "vim-stay could not switch to window ID: ".a:winid
@@ -60,7 +62,9 @@ function! stay#view#load(winid) abort
   let l:eventignore = &eventignore
   set eventignore+=SessionLoadPost
   try
-    silent loadview
+    let l:idx = get(a:, 1, 0)
+    let l:cmd = ['loadview'] + (l:idx > 0 ? [l:idx] : [])
+    silent execute join(l:cmd, ' ')
     " ... then fire it in a more targeted way
     if exists('b:stay_loaded_view')
       let &eventignore = l:eventignore

@@ -66,6 +66,47 @@ function! s:LoadView(bufnr, winid) abort
   return l:done
 endfunction
 
+" Override 'autoread' in persistent buffers:
+function! s:NoAutoread(bufnr) abort
+  if getbufvar(a:bufnr, '&autoread') is 1 &&
+  \ stay#ispersistent(a:bufnr, g:volatile_ftypes) is 1
+    call setbufvar(a:bufnr, '&autoread', 0)
+    let l:state = stay#getbufstate(a:bufnr)
+    let l:state.autoread = 1
+  endif
+endfunction
+
+" Save / load view session files for all windows of buffer {bufnr}:
+function! s:StickyViews(step, bufnr) abort
+  if !stay#ispersistent(a:bufnr, g:volatile_ftypes) | return 0 | endif
+
+  let l:state = stay#getbufstate(a:bufnr)
+  if a:step is 'make' && !empty(v:fcs_reason) && empty(v:fcs_choice)
+    " emulate overridden 'autoread' setting
+    let v:fcs_choice =
+    \ get(l:state, 'autoread', 0) is 1 &&
+    \ getbufvar(a:bufnr, '&modified') isnot 1 &&
+    \ v:fcs_reason isnot 'deleted' ? 'reload' : 'ask'
+  endif
+
+  let l:curwin = stay#win#getid(winnr()) " Vim maintains the current window
+  let l:winids = filter(stay#win#findbuf(a:bufnr), 'v:val isnot l:curwin')
+  if a:step is 'make' " save the window IDs for the 'load' step
+    let l:state.sticky = copy(l:winids)
+  elseif a:step isnot 'load' || empty(get(l:state, 'sticky', []))
+    return 0
+  else " ensure we only load in window IDs we made a view for
+    call filter(l:winids, 'index(l:state.sticky, v:val) isnot -1')
+  endif
+
+  for l:idx in range(len(l:winids))
+    let l:viewidx = min([l:idx + 1, 9])
+    if stay#view#{a:step}(l:winids[l:idx], l:viewidx) is -1
+      echomsg v:errmsg
+    endif
+  endfor
+endfunction
+
 " Set up global configuration, autocommands, commands:
 function! s:Setup(force) abort
   " core functionality (skipped unless {force} is 1)
@@ -90,6 +131,13 @@ function! s:Setup(force) abort
       " ensure a newly visible buffer loads its view
       autocmd BufWinEnter ?* nested
       \ call s:LoadView(str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+      " preserve views on file reloads
+      autocmd BufEnter,BufWinEnter ?*
+      \ call s:NoAutoread(str2nr(expand('<abuf>')))
+      autocmd FileChangedShell     ?* nested
+      \ call s:StickyViews('make', str2nr(expand('<abuf>')))
+      autocmd FileChangedShellPost ?* nested
+      \ call s:StickyViews('load', str2nr(expand('<abuf>')))
     augroup END
 
     " - ex commands
