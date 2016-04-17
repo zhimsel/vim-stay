@@ -19,6 +19,11 @@ let s:defaults.volatile_ftypes = [
 \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
 \ 'svn', 'cvs', 'cvsrc', 'bzr',
 \ ]
+" - verbosity of echomsg error / status reporting
+"  -1 no messages
+"   0 important error messages (default)
+"   1 all status and error messages
+let s:defaults.stay_verbosity = 0
 let s:integrations = [] " }}}
 
 " PLUG-IN MACHINERY {{{
@@ -47,7 +52,7 @@ function! s:MakeView(event, bufnr, winid) abort
   endif
 
   let l:done = stay#view#make(a:winid)
-  if l:done is -1 | echomsg v:errmsg | endif
+  if l:done < g:stay_verbosity | echomsg v:errmsg | endif
   call setbufvar(a:bufnr, 'stay_leftwin', a:event is 'WinLeave' ? localtime() : '')
   return l:done
 endfunction
@@ -62,7 +67,7 @@ function! s:LoadView(bufnr, winid) abort
   endif
 
   let l:done = stay#view#load(a:winid)
-  if l:done is -1 | echomsg v:errmsg | endif
+  if l:done < g:stay_verbosity | echomsg v:errmsg | endif
   return l:done
 endfunction
 
@@ -111,9 +116,14 @@ function! s:Setup(force) abort
         try
           call call('stay#integrate#'.l:name.'#setup', [])
         catch /E117/ " no setup function found
+          if g:stay_verbosity > 0
+            echomsg "No vim-stay integration setup function found for" l:name
+          endif
           continue
         catch " integration setup execution errors
-          echomsg "Skipped vim-stay integration for" l:name "due to error:" v:errmsg
+          if g:stay_verbosity > -1
+            echomsg "Skipped vim-stay integration for" l:name "due to error:" v:errmsg
+          endif
           continue
         endtry
         call add(s:integrations, l:name)

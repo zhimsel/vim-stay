@@ -57,6 +57,17 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 >
 	let g:volatile_ftypes += ['foo', 'bar']
 <
+ERROR MESSAGING VERBOSITY:			*g:stay_verbosity*
+
+Because it is designed to work in the background of frequent Vim operations
+(buffer view changes), vim-stay will suppress most errors and only echo
+messages about important ones. You can adjust this policy by setting the
+value of this variable to
+
+	-1	echoes no messages for errors at all
+	 0	echoes messages for important errors (default)
+	 1	echoes messages for all errors
+
 ==============================================================================
 3. Commands					*vim-stay-commands*
 
@@ -73,7 +84,7 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 		The bang variant will re-load all integrations (not just new
 		ones), clear and re-define the core autocommands as well as
 		all |vim-stay-commands| and reset all global configuration
-		variables (currently, only |g:volatile_ftypes|) to the plug-in
+		variables (as listed in |vim-stay-configuration|) to the plug-in
 		defaults.
 
 ==============================================================================
