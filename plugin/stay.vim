@@ -24,6 +24,8 @@ let s:defaults.volatile_ftypes = [
 "   0 important error messages (default)
 "   1 all status and error messages
 let s:defaults.stay_verbosity = 0
+
+" Loaded 3rd party integrations:
 let s:integrations = [] " }}}
 
 " PLUG-IN MACHINERY {{{
