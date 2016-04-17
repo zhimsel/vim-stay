@@ -23,14 +23,14 @@ let s:integrations = [] " }}}
 
 " PLUG-IN MACHINERY {{{
 " Set b:stay_loaded_view to a sourced view session's file path
-" (|v:this_session| is not set for view sessions, so we roll our own)
+" (|v:this_session| is not set for view sessions, so we roll our own):
 function! s:ViewSourced(file) abort
   if stay#isviewfile(a:file) is 1
     let b:stay_loaded_view = a:file
   endif
 endfunction
 
-" conditionally create a view session file for {bufnr} in {winid}
+" Conditionally create a view session file for {bufnr} in {winid}:
 function! s:MakeView(stage, bufnr, winid) abort
   " do not create a view session if a call with a lower {stage} number
   " did so recently (currently hardwired to 1 second or less ago)
@@ -54,7 +54,7 @@ function! s:MakeView(stage, bufnr, winid) abort
   return l:done
 endfunction
 
-" conditionally load view session file for {bufnr} in {winid}
+" Conditionally load view session file for {bufnr} in {winid}:
 function! s:LoadView(bufnr, winid) abort
   if exists('g:SessionLoad') ||
   \  pumvisible() ||
