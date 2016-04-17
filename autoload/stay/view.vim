@@ -64,7 +64,8 @@ function! stay#view#load(winid) abort
     " ... then fire it in a more targeted way
     if exists('b:stay_loaded_view')
       let &eventignore = l:eventignore
-      call s:doautocmd('SessionLoadPost')
+      " don't use s:doautocmd(): we need modelines to be evaluated!
+      execute (exists('#SessionLoadPost') ? '' : 'silent') 'doautocmd SessionLoadPost'
     endif
     " respect position set by other scripts / plug-ins
     if exists('b:stay_atpos')
