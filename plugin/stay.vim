@@ -41,9 +41,9 @@ endfunction
 function! s:MakeView(stage, bufnr, winid) abort
   " do not create a view session if a call with a lower {stage} number
   " did so recently (currently hardwired to 1 second or less ago)
-  let l:left = getbufvar(a:bufnr, 'stay_left')
-  if empty(l:left) | let l:left = {} | endif
-  if a:stage > 1 && localtime() - get(l:left, a:stage-1, 0) <= 1
+  let l:state = stay#getbufstate(a:bufnr)
+  let l:left  = get(l:state, 'left', {})
+  if a:stage > 1 && !empty(l:left) && localtime() - get(l:left, a:stage-1, 0) <= 1
     return 0
   endif
 
@@ -55,7 +55,9 @@ function! s:MakeView(stage, bufnr, winid) abort
 
   let l:done = stay#view#make(a:winid)
   if l:done < g:stay_verbosity | echomsg v:errmsg | endif
-  call setbufvar(a:bufnr, 'stay_left', extend(l:left, {string(a:stage): localtime()}))
+  if l:done is  1
+    let l:state.left = extend(l:left, {string(a:stage): localtime()})
+  endif
   return l:done
 endfunction
 

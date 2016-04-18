@@ -118,6 +118,18 @@ function! stay#isviewfile(file) abort
   return -1
 endfunction
 
+" Get the buffer state Dictionary for {bufnr}:
+" @signature:  stay#getbufstate({bufnr:Expression})
+" @returns:    Dictionary
+function! stay#getbufstate(bufnr) abort
+  let l:state = getbufvar(a:bufnr, '_stay')
+  if l:state is ''
+    unlet l:state | let l:state = {}
+    call setbufvar(a:bufnr, '_stay', l:state)
+  endif
+  return l:state
+endfunction
+
 let &cpoptions = s:cpoptions
 unlet! s:cpoptions
 
