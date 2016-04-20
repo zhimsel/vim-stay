@@ -19,6 +19,10 @@ function! stay#view#make(winid) abort
   endif
 
   call s:doautocmd('User', 'BufStaySavePre')
+  " enforce non-storage of options as that causes odd issues
+  let l:viewoptions = &viewoptions
+  set viewoptions-=options
+  set viewoptions-=localoptions
   try
     unlet! b:stay_atpos
     silent mkview
@@ -32,6 +36,7 @@ function! stay#view#make(winid) abort
     return -1
   finally
     call s:doautocmd('User', 'BufStaySavePost')
+    let &viewoptions = l:viewoptions
     call s:sneak2winid(l:curwinid)
   endtry
 endfunction

@@ -40,6 +40,13 @@ It is recommended to clear the 'viewdir' contents after changing this option,
 as it is only applied when creating a view session file, not when loading it.
 vim-stay provides the |:CleanViewdir| command to do that.
 
+Note that even if you would rather not change the other option flags from Vim‘s
+defaults, you absolutely should remove `options` from 'viewoptions', i.e. do
+>
+	set viewoptions-=options
+<
+as storing local options in view session files causes no end of trouble.
+
 
 IGNORED FILE TYPES:				*g:volatile_ftypes*
 
@@ -178,6 +185,14 @@ You have removed "folds" from 'viewoptions'. See the recommended setting
 under |vim-stay-viewoptions|.
 
 
+MY BUFFER-LOCAL OPTIONS ARE NOT PERSISTED
+
+This is by design: restoring local options from view session files causes hard
+to track issues with both Vim features and other plug-ins. Because of this,
+starting from version 1.4, vim-stay will ignore the `options` flag in
+'viewoptions' when creating views.
+
+
 MY STATE IS NOT PERSISTED WHEN SWITCHING BETWEEN WINDOWS AND OTHER OSes
 
 With the default settings, 'viewoptions' uses platform specific path
@@ -197,10 +212,24 @@ For an example, see
 	https://github.com/kopischke/vim-stay/issues/10#issuecomment-83691770.
 
 
-VIM-STAY MESSES UP OPTION X / BUFFER VARIABLE Y
+MY MODELINES DO NOT SEEM TO TAKE EFFECT /
+THE VIM-AIRLINE STATUSLINE IS WRONG AFTER SWITCHING BUFFERS /
+PLUG-INS ACT UP AFTER SWITCHING WINDOWS /
+VIM-STAY MESSES UP OPTION X
 
-You have "options" or "localoptions" set in 'viewoptions'. See the
-recommended setting under |vim-stay-viewoptions|.
+Your 'viewoptions' include or did include the default `options` (or
+`localoptions`) flag, which means all buffer options get stored in the view
+session files created by vim-stay. Loading such a view session file has a lot
+of unpleasant side effects, hence the recommended |vim-stay-viewoptions| which
+do not include the flag.
+
+Starting from version 1.4, vim-stay temporarily removes the `options`and
+`localoptions` flag from 'viewoptions' when creating views. However, view
+session files created with the incorrect settings (either by earlier versions
+of vim-stay, or manually via |:mkview|) will only be updated when vim-stay
+re-writes them, and thus still cause issues on first load. If you would rather
+start with a fresh slate, you can wipe your 'viewdir' with |:CleanViewdir|.
+Note that you will lose all view state doing so.
 
 
 VIM-STAY TRIES TO PERSIST STATE FOR TEMPORARY FILES

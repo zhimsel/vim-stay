@@ -16,7 +16,7 @@ If you have wished Vim would be smarter about keeping your editing state, *vim-s
 
 ### Usage
 
-Recommended: `set viewoptions=cursor,folds,slash,unix`. Edit as usual. See the [documentation][doc] for more.
+Recommended: `set viewoptions=cursor,folds,slash,unix` (but at the very least do `set viewoptions-=options`). Edit as usual. See the [documentation][doc] for more.
 
 ### Rationale
 
