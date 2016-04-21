@@ -106,9 +106,9 @@ function! s:Setup(force) abort
     augroup END
 
     " - ex commands
-    command! -bang -nargs=? CleanViewdir
+    command! -bar -bang -nargs=? CleanViewdir
     \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
-    command! -bang -nargs=0 StayReload
+    command! -bar -bang -nargs=0 StayReload
     \ call <SID>Setup(expand('<bang>') is '!')
   endif
 
