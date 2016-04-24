@@ -52,8 +52,16 @@ endfunction
 " @signature:  stay#istemp({fname:String})
 " @returns:    Boolean
 if exists('*glob2regpat') " fastest option, Vim 7.4 with patch 668 only
+  let s:backupskip = {'option': '', 'items': []}
   function! stay#istemp(path) abort
-    for l:tempdir in split(&backupskip, '\v\\@<!%(\\\\)*,')
+    " cache List of option-unescaped 'backuspkip' values
+    if s:backupskip.option isnot &backupskip
+      let s:backupskip.option = &backupskip
+      let s:backupskip.items  = split(s:backupskip.option, '\v\\@<!%(\\\\)*,')
+      let s:backupskip.items  = map(s:backupskip.items,
+      \ "substitute(v:val, '\v\\@<!%(\\\\)*\\\zs[ ,]', '\\0', 'g')")
+    endif
+    for l:tempdir in s:backupskip.items
       if a:path =~# glob2regpat(l:tempdir)
         return 1
       endif
