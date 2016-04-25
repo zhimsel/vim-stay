@@ -48,6 +48,22 @@ defaults, you absolutely should remove `options` from 'viewoptions', i.e. do
 as storing local options in view session files causes no end of trouble.
 
 
+IGNORED VIEW SESSION OPTIONS:			*w:viewignore* *g:viewignore*
+
+Vim's view session files always restore a local working directory and the
+local / global state of the |arglist|. You can override this behaviour when
+loading view session files with vim-stay by setting `w:viewignore` in window
+scope, or `g:viewignore` globally, to a comma separated option list of
+
+	lcd	suppresses local working directory restoration
+	arglist	suppresses overriding the current arglist
+
+i.e. do
+>
+	let g:viewignore = 'lcd,arglist'
+<
+to suppress both on loading of all views.
+
 IGNORED FILE TYPES:				*g:volatile_ftypes*
 
 vim-stay applies heuristics to detect buffers that should not be persisted,
@@ -64,6 +80,7 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 >
 	let g:volatile_ftypes += ['foo', 'bar']
 <
+
 ERROR MESSAGING VERBOSITY:			*g:stay_verbosity*
 
 Because it is designed to work in the background of frequent Vim operations
@@ -203,13 +220,8 @@ recommended setting under |vim-stay-viewoptions|.
 MY CURRENT WORKING DIRECTORY / MY ARGLIST CHANGES WHEN OPENING A FILE
 
 vim-stay uses |mkview| and |loadview|, which persist the local arglist and
-local working directory. This can be a bit disorienting at first, but it is by
-(Vim's) design. If this really irks you, you may be able to work around it
-using vim-stay's autocommand API (see |vim-stay-autocommands|).
-
-For an example, see
-
-	https://github.com/kopischke/vim-stay/issues/10#issuecomment-83691770.
+local working directory. Set |g:viewignore| or |w:viewignore| to override this
+behaviour.
 
 
 MY MODELINES DO NOT SEEM TO TAKE EFFECT /

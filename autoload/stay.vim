@@ -97,35 +97,6 @@ function! stay#isftype(bufnr, ftypes) abort
   return !empty(filter(l:candidates, 'index(a:ftypes, v:val) isnot -1'))
 endfunction
 
-" Check if {file} is a view session file:
-" @signature:  stay#isviewfile({file:String})
-" @returns:    Boolean (-1 if unable to check)
-let s:viewdir = {'option': '', 'path': ''}
-let s:s_event = '\C\vdoauto%[all]!?%(\s+<nomodeline>)?%(\s+\S+)?\s+SessionLoadPost'
-let s:s_load  = '\C\unl%[et]!?\s+SessionLoad'
-function! stay#isviewfile(file) abort
-  " cache transformed 'viewdir' value accounting for misformatted directory
-  " specification and option-escaped spaces
-  if s:viewdir.option isnot &viewdir
-    let s:viewdir.option = &viewdir
-    let s:viewdir.path   = substitute(s:viewdir.option, '\v[/\\]*$', '', '')
-    let s:viewdir.path   = substitute(s:viewdir.path, '\v\\@<!(\\\\)*\\ ', ' ', 'g')
-  endif
-
-  " anything outside 'viewdir' is not a view file
-  if stridx(a:file, s:viewdir.path) isnot 0 | return 0 | endif
-
-  " look into the file for signature commands:
-  " - `doautoall SessionLoadPost` is characteristic of views and session files
-  " - `unlet SessionLoad` is exclusive to session files
-  try
-    let l:tail = readfile(a:file, '', -5)
-    return match(l:tail, s:s_event) isnot -1 && match(l:tail, s:s_load) is -1
-  catch
-  endtry
-  return -1
-endfunction
-
 " Get the buffer state Dictionary for {bufnr}:
 " @signature:  stay#getbufstate({bufnr:Expression})
 " @returns:    Dictionary

@@ -45,6 +45,7 @@ endfunction
 " @signature:  stay#view#load({winid:Number})
 " @returns:    Boolean (-1 on error)
 " @notes:      Exceptions are suppressed, but written to |v:errmsg|
+let s:viewdir = {'option': '', 'path': ''}
 function! stay#view#load(winid) abort
   let l:curwinid = stay#win#getid()
   if s:sneak2winid(a:winid) isnot 1
@@ -66,20 +67,37 @@ function! stay#view#load(winid) abort
   " slows down buffer load, hence we suppress it...
   let l:eventignore = &eventignore
   set eventignore+=SessionLoadPost
+  set eventignore-=SourceCmd
+
   try
+    " cache 'viewdir' value accounting for misformatted directory specification
+    if s:viewdir.option isnot &viewdir
+      let s:viewdir.option = &viewdir
+      let s:viewdir.path   = substitute(s:viewdir.option, '\v[/\\]*$', s:slash(), '')
+    endif
+
+    " catch sourcing of the view file with a one-off SourceCmd autocommand
+    let l:pattern = s:viewdir.path.'*'.fnamemodify(bufname('%'), ':t').'*'
+    execute 'autocmd SourceCmd' l:pattern
+    \ 'call stay#view#source(expand(''<afile>'')) |'
+    \ 'autocmd! SourceCmd' l:pattern
     silent loadview
-    " ... then fire it in a more targeted way
-    if exists('b:stay_loaded_view')
+    let l:did_load_view = exists('b:stay_loaded_view')
+
+    " fire SessionLoadPost in a more targeted way
+    if l:did_load_view is 1
       let &eventignore = l:eventignore
       " don't use s:doautocmd(): we need modelines to be evaluated!
       execute (exists('#SessionLoadPost') ? '' : 'silent') 'doautocmd SessionLoadPost'
     endif
+
     " respect position set by other scripts / plug-ins
     if exists('b:stay_atpos')
       call cursor(b:stay_atpos[0], b:stay_atpos[1])
       silent! normal! zOzz
     endif
-    return exists('b:stay_loaded_view')
+
+    return l:did_load_view
   catch /\vE48[45]/ " no read access to existing view file
     let v:errmsg  = "vim-stay could not read the view session file! "
     let v:errmsg .= "Vim error ".s:exception2errmsg(v:exception)
@@ -96,9 +114,42 @@ function! stay#view#load(winid) abort
       let b:stay_loaded_view = l:stay_loaded_view
     endif
     let &eventignore = l:eventignore
+    silent! execute 'autocmd! SourceCmd' l:pattern
     call s:doautocmd('User', 'BufStayLoadPost')
     call s:sneak2winid(l:curwinid)
   endtry
+endfunction
+
+" Source view session {file} minding 'viewignore':
+" @signature:  stay#view#source({file:String})
+" @returns:    Boolean (-1 on error)
+" @notes:      Exceptions are suppressed, but written to |v:errmsg|
+function! stay#view#source(file) abort
+  if filereadable(a:file) isnot 1 | return 0 | endif
+  let l:ignores = split(get(w:, 'viewignore', get(g:, 'viewignore', '')), ',')
+  let l:noargl  = empty(l:ignores) ? 0 : index(l:ignores, 'arglist') isnot -1
+  let l:nolcd   = empty(l:ignores) ? 0 : index(l:ignores, 'lcd') isnot -1
+  try
+    if get(l:, 'noargl', 0) is 1 || get(l:, 'nolcd', 0) is 1
+      let l:cmds = readfile(a:file, '')
+      for l:cmd in l:cmds
+        if l:cmd =~ '\v^\s*"|^\s*$' ||
+        \ (l:nolcd  is 1 && l:cmd =~ '\v\C<lcd!?\s+\f+') ||
+        \ (l:noargl is 1 && l:cmd =~ '\v\C<%(argl%[ocal]|argg%[lobal])!?>')
+          continue
+        endif
+        silent execute l:cmd
+      endfor
+    else
+      silent noautocmd execute 'source' a:file
+    endif
+  catch
+    let v:errmsg  = "vim-stay could not source view session file ".a:file."! "
+    let v:errmsg .= "Vim error ".s:exception2errmsg(v:exception)
+    return -1
+  endtry
+  let b:stay_loaded_view = a:file
+  return 1
 endfunction
 
 " Private helper functions: {{{
@@ -113,6 +164,17 @@ function! s:doautocmd(event, ...) abort
     execute 'doautocmd <nomodeline>' join(l:event, ' ')
   endif
 endfunction
+
+" - get the path separator character
+if exists('+shellslash')
+  function! s:slash() abort
+    return &shellslash ? '/' : '\'
+  endfunction
+else " MacOS can use slashes from Vim 7 on, see |mac-filename|
+  function! s:slash() abort
+    return '/'
+  endfunction
+endif
 
 " - activate a window ID without leaving a trail
 function! s:sneak2winid(id) abort

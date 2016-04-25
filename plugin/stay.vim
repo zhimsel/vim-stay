@@ -29,14 +29,6 @@ let s:defaults.stay_verbosity = 0
 let s:integrations = [] " }}}
 
 " PLUG-IN MACHINERY {{{
-" Set b:stay_loaded_view to a sourced view session's file path
-" (|v:this_session| is not set for view sessions, so we roll our own):
-function! s:ViewSourced(file) abort
-  if stay#isviewfile(a:file) is 1
-    let b:stay_loaded_view = a:file
-  endif
-endfunction
-
 " Conditionally create a view session file for {bufnr} in {winid}:
 function! s:MakeView(stage, bufnr, winid) abort
   " do not create a view session if a call with a lower {stage} number
@@ -88,9 +80,6 @@ function! s:Setup(force) abort
     " - autocommands
     augroup stay
       autocmd!
-      " view session file loading recognition
-      autocmd SourcePre ?* call s:ViewSourced(expand('<afile>'))
-
       " ensure a newly visible buffer loads its view
       autocmd BufWinEnter ?* nested
       \ call s:LoadView(str2nr(expand('<abuf>')), stay#win#getid(winnr()))
