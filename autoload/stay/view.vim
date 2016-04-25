@@ -52,6 +52,9 @@ function! stay#view#load(winid) abort
     return 0
   endif
 
+  " emit Pre event before we change any setting
+  call s:doautocmd('User', 'BufStayLoadPre')
+
   " ensure we only react to a fresh view load without clobbering
   " b:stay_loaded_view (which is part of the API)
   if exists('b:stay_loaded_view')
@@ -59,7 +62,6 @@ function! stay#view#load(winid) abort
     unlet b:stay_loaded_view
   endif
 
-  call s:doautocmd('User', 'BufStayLoadPre')
   " the `doautoall SessionLoadPost` in view session files significantly
   " slows down buffer load, hence we suppress it...
   let l:eventignore = &eventignore
