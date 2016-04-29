@@ -21,9 +21,9 @@ function! stay#view#make(winid) abort
   call s:doautocmd('User', 'BufStaySavePre')
   " enforce non-storage of options as that causes odd issues
   let l:viewoptions = &viewoptions
-  set viewoptions-=options
-  set viewoptions-=localoptions
   try
+    set viewoptions-=options
+    set viewoptions-=localoptions
     unlet! b:stay_atpos
     silent mkview
     return 1
@@ -59,9 +59,9 @@ function! stay#view#load(winid) abort
   " the `doautoall SessionLoadPost` in view session files significantly
   " slows down buffer load, hence we suppress it...
   let l:eventignore = &eventignore
-  set eventignore+=SessionLoadPost
-  set eventignore-=SourceCmd
   try
+    set eventignore+=SessionLoadPost
+    set eventignore-=SourceCmd
     " ensure we only react to a fresh view load without clobbering
     " b:stay_loaded_view (which is part of the API)
     if exists('b:stay_loaded_view')
