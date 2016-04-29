@@ -45,6 +45,7 @@ endfunction
 " @signature:  stay#view#load({winid:Number})
 " @returns:    Boolean (-1 on error)
 " @notes:      Exceptions are suppressed, but written to |v:errmsg|
+let s:viewdir = {'option': '', 'path': ''}
 function! stay#view#load(winid) abort
   let l:curwinid = stay#win#getid()
   if s:sneak2winid(a:winid) isnot 1
@@ -55,31 +56,45 @@ function! stay#view#load(winid) abort
   " emit Pre event before we change any setting
   call s:doautocmd('User', 'BufStayLoadPre')
 
-  " ensure we only react to a fresh view load without clobbering
-  " b:stay_loaded_view (which is part of the API)
-  if exists('b:stay_loaded_view')
-    let l:stay_loaded_view = b:stay_loaded_view
-    unlet b:stay_loaded_view
-  endif
-
   " the `doautoall SessionLoadPost` in view session files significantly
   " slows down buffer load, hence we suppress it...
   let l:eventignore = &eventignore
   set eventignore+=SessionLoadPost
+  set eventignore-=SourceCmd
   try
-    silent loadview
-    " ... then fire it in a more targeted way
+    " ensure we only react to a fresh view load without clobbering
+    " b:stay_loaded_view (which is part of the API)
     if exists('b:stay_loaded_view')
+      let l:stay_loaded_view = b:stay_loaded_view
+      unlet b:stay_loaded_view
+    endif
+
+    " cache 'viewdir' value, accounting for misformatted directory specification
+    if s:viewdir.option isnot &viewdir
+      let s:viewdir.option = &viewdir
+      let s:viewdir.path   = substitute(s:viewdir.option, '\v[/\\]*$', s:slash(), '')
+    endif
+
+    " catch sourcing of the view file with a one-off SourcePre autocommand
+    let l:pattern = s:viewdir.path.'*'.fnamemodify(bufname('%'), ':t').'*'
+    execute 'autocmd SourcePre' l:pattern
+    \ 'let b:stay_loaded_view = expand(''<sfile>'') | autocmd! SourcePre' l:pattern
+    silent loadview
+    let l:did_load_view = exists('b:stay_loaded_view')
+
+    " fire SessionLoadPost in a more targeted way
+    if l:did_load_view is 1
       let &eventignore = l:eventignore
       " don't use s:doautocmd(): we need modelines to be evaluated!
       execute (exists('#SessionLoadPost') ? '' : 'silent') 'doautocmd SessionLoadPost'
     endif
+
     " respect position set by other scripts / plug-ins
     if exists('b:stay_atpos')
       call cursor(b:stay_atpos[0], b:stay_atpos[1])
       silent! normal! zOzz
     endif
-    return exists('b:stay_loaded_view')
+    return l:did_load_view
   catch /\vE48[45]/ " no read access to existing view file
     let v:errmsg  = "vim-stay could not read the view session file! "
     let v:errmsg .= "Vim error ".s:exception2errmsg(v:exception)
@@ -92,7 +107,7 @@ function! stay#view#load(winid) abort
     return -1
   finally
     " restore stale b:stay_loaded_view for API usage
-    if !exists('b:stay_loaded_view') && exists('l:stay_loaded_view')
+    if l:did_load_view isnot 1 && exists('l:stay_loaded_view')
       let b:stay_loaded_view = l:stay_loaded_view
     endif
     let &eventignore = l:eventignore
@@ -113,6 +128,17 @@ function! s:doautocmd(event, ...) abort
     execute 'doautocmd <nomodeline>' join(l:event, ' ')
   endif
 endfunction
+
+" - get the path separator character
+if exists('+shellslash')
+  function! s:slash() abort
+    return &shellslash ? '/' : '\'
+  endfunction
+else " MacOS can use slashes from Vim 7 on, see |mac-filename|
+  function! s:slash() abort
+    return '/'
+  endfunction
+endif
 
 " - activate a window ID without leaving a trail
 function! s:sneak2winid(id) abort
