@@ -173,7 +173,7 @@ if get(s:, 'needbeam', 0) is 1
     if a:number < 1 || call(s:beamtests[a:scope], []) is a:number
       return 1
     endif
-    silent noautocmd keepjumps keepalt execute printf(s:beamdcmds[a:scope], a:number)
+    silent noautocmd keepalt execute printf(s:beamdcmds[a:scope], a:number)
     return call(s:beamtests[a:scope], []) is a:number
   endfunction
 

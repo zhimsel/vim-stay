@@ -116,7 +116,7 @@ endfunction
 
 " - activate a window ID without leaving a trail
 function! s:sneak2winid(id) abort
-  silent noautocmd keepalt keepjumps return stay#win#gotoid(a:id)
+  silent noautocmd keepalt return stay#win#gotoid(a:id)
 endfunction
 
 " - extract the error message from an {exception}
