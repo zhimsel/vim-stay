@@ -90,7 +90,7 @@ function! stay#view#load(winid) abort
     endif
 
     " respect position set by other scripts / plug-ins
-    if exists('b:stay_atpos')
+    if l:did_load_view is 1 && exists('b:stay_atpos') && getpos('.')[1:2] != b:stay_atpos
       call cursor(b:stay_atpos[0], b:stay_atpos[1])
       silent! normal! zOzz
     endif
