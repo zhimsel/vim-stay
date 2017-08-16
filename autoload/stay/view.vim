@@ -20,7 +20,15 @@ function! stay#view#make(winnr) abort
     unlet! b:stay_atpos
     call s:doautocmd('User', 'BufStaySavePre')
     let l:dopost = 1
-    mkview
+    try
+      mkview
+    catch
+      " Might cause E190, e.g. because of "File name too long".
+      echohl WarningMsg
+      echom printf('vim-stay: failed to mkview: %s', v:exception)
+      echohl NONE
+      return 0
+    endtry
     return 1
   finally
     if get(l:, 'dopost', 0) is 1
