@@ -3,6 +3,8 @@
 [![Open issues][badge-issues]][issues]
 [![License][badge-license]][license]
 
+_THIS PLUG-IN IS IN NEED OF A NEW MAINTAINER? PLEASE [OPEN AN ISSUE][issues] IF YOU ARE INTERESTED IN TAKING OVER!_
+
 ## Stay at my cursor, boy!
 
 *vim-stay* adds automated view session creation and restoration whenever editing a buffer, across Vim sessions and window life cycles. It also alleviates Vim's tendency to lose view state when cycling through buffers (via `argdo`, `bufdo` et al.). It is smart about which buffers should be persisted and which should not, making the procedure painless and invisible.
@@ -26,7 +28,7 @@ Keeping editing session state should be a given in an editor; unluckily, Vim's s
 
 *vim-stay* is licensed under [the terms of the MIT license according to the accompanying license file][license].
 
-[badge-status]:  http://img.shields.io/badge/status-active-brightgreen.svg?style=flat-square
+[badge-status]:  http://img.shields.io/badge/status-unmaintained-red.svg?style=flat-square
 [badge-release]: http://img.shields.io/github/release/kopischke/vim-stay.svg?style=flat-square
 [badge-issues]:  http://img.shields.io/github/issues/kopischke/vim-stay.svg?style=flat-square
 [badge-license]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
