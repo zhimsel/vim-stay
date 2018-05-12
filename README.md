@@ -3,7 +3,7 @@
 [![Open issues][badge-issues]][issues]
 [![License][badge-license]][license]
 
-_THIS PLUG-IN IS IN NEED OF A NEW MAINTAINER? PLEASE [OPEN AN ISSUE][issues] IF YOU ARE INTERESTED IN TAKING OVER!_
+_THIS PLUG-IN IS IN NEED OF A NEW MAINTAINER: PLEASE [OPEN AN ISSUE][issues] IF YOU ARE INTERESTED IN TAKING OVER!_
 
 ## Stay at my cursor, boy!
 
