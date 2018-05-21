@@ -3,8 +3,6 @@
 [![Open issues][badge-issues]][issues]
 [![License][badge-license]][license]
 
-_THIS PLUG-IN IS IN NEED OF A NEW MAINTAINER: PLEASE [OPEN AN ISSUE][issues] IF YOU ARE INTERESTED IN TAKING OVER!_
-
 ## Stay at my cursor, boy!
 
 *vim-stay* adds automated view session creation and restoration whenever editing a buffer, across Vim sessions and window life cycles. It also alleviates Vim's tendency to lose view state when cycling through buffers (via `argdo`, `bufdo` et al.). It is smart about which buffers should be persisted and which should not, making the procedure painless and invisible.
@@ -22,7 +20,7 @@ Recommended: `set viewoptions=cursor,folds,slash,unix`. Edit as usual. See the [
 
 ### Rationale
 
-Keeping editing session state should be a given in an editor; unluckily, Vim's solution for this, *view sessions*, are not easily automated [without encountering painful bumps][mkview-wikia]. As the one plug-in I found that aims to fix this, Zhou Yi Chao’s [*restore_view.vim*][chao-plugin], limits itself to Vim editing sessions, doesn’t play well with other position setting plug-ins like my own [vim-fetch][vim-fetch] and as [I wasn’t very happy with its heuristics][heuristics], I wrote my own.
+Keeping editing session state should be a given in an editor; unluckily, Vim's solution for this, *view sessions*, are not easily automated [without encountering painful bumps][mkview-wikia]. As the one plug-in available that aimed to fix this, Zhou Yi Chao’s [*restore_view.vim*][chao-plugin], limited itself to Vim editing sessions, didn’t play well with other position setting plug-ins like [vim-fetch][vim-fetch] and as there were [some issues with its heuristics][heuristics], *vim-fetch* was born.
 
 ### License
 
