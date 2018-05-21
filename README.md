@@ -28,16 +28,16 @@ Keeping editing session state should be a given in an editor; unluckily, Vim's s
 
 *vim-stay* is licensed under [the terms of the MIT license according to the accompanying license file][license].
 
-[badge-status]:  http://img.shields.io/badge/status-unmaintained-red.svg?style=flat-square
-[badge-release]: http://img.shields.io/github/release/kopischke/vim-stay.svg?style=flat-square
-[badge-issues]:  http://img.shields.io/github/issues/kopischke/vim-stay.svg?style=flat-square
+[badge-status]:  http://img.shields.io/badge/status-maintained-green.svg?style=flat-square
+[badge-release]: http://img.shields.io/github/release/zhimsel/vim-stay.svg?style=flat-square
+[badge-issues]:  http://img.shields.io/github/issues/zhimsel/vim-stay.svg?style=flat-square
 [badge-license]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [chao-plugin]:   http://www.vim.org/scripts/script.php?script_id=4021
 [doc]:           doc/vim-stay.txt
-[heuristics]:    https://github.com/kopischke/vim-stay/issues/2
-[issues]:        https://github.com/kopischke/vim-stay/issues
+[heuristics]:    https://github.com/zhimsel/vim-stay/issues/2
+[issues]:        https://github.com/zhimsel/vim-stay/issues
 [license]:       LICENSE.md
 [mkview-wikia]:  http://vim.wikia.com/wiki/Make_views_automatic
-[releases]:      https://github.com/kopischke/vim-stay/releases
+[releases]:      https://github.com/zhimsel/vim-stay/releases
 [vim-fetch]:     http://www.vim.org/scripts/script.php?script_id=5089
 [vimscripts]:    http://www.vim.org/scripts/script.php?script_id=5099
