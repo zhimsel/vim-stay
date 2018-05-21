@@ -203,7 +203,7 @@ Check if the 'filetype' of the affected file is listed in |g:volatile_ftypes|
 and try adding it if it is not. I'd also be grateful if you reported the file
 type by opening a support issue (or even better, a PR) at
 
-	https://github.com/kopischke/vim-stay/issues
+	https://github.com/zhimsel/vim-stay/issues
 
 
 MY VIEW DIRECTORY IS A FESTERING MESS
@@ -217,7 +217,7 @@ MY PROBLEM ISN'T LISTED HERE
 
 You might have found a bug. Please open an issue at
 
-	https://github.com/kopischke/vim-stay/issues
+	https://github.com/zhimsel/vim-stay/issues
 
 Please do not forget to list the steps to reproduce the issue as well as your
 Vim version and platform.
@@ -225,11 +225,10 @@ Vim version and platform.
 ==============================================================================
 7. Credits and License			*vim-stay-credits-license*
 
-vim-stay is maintained by Martin Kopischke
+vim-stay was originally created by Martin Kopischke, http://martin.kopischke.net,
+and is now maintained by Zach Himsel.
 
-	http://martin.kopischke.net
-
-and licensed under the terms of the MIT license according to the accompanying
+It is licensed under the terms of the MIT license according to the accompanying
 license file (LICENSE.md). It is inspired by, but not based on, `restore_view.vim`
 by Zhou Yi Chao (http://www.vim.org/scripts/script.php?script_id=4021).
 
