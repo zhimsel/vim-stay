@@ -60,12 +60,16 @@ function! s:setup(defaults) abort
 
     " default buffer handling
     autocmd BufLeave,BufWinLeave ?* nested
-          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-          \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
-          \ endif
+          \ if !pumvisible() |
+          \   if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
+          \     call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
+          \   endif |
+          \ endif |
     autocmd BufWinEnter ?* nested
-          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-          \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
+          \ if !pumvisible() |
+          \   if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
+          \     call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
+          \   endif |
           \ endif
 
     " generic, extensible 3rd party integration
