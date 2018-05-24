@@ -36,7 +36,7 @@ endfunction
 " @returns:    Boolean
 if exists('*glob2regpat') " fastest option, Vim 7.4 with patch 668 only
   function! stay#istemp(path) abort
-    for l:tempdir in split(&backupskip, '\m[^\\]\%(\\\\\)*,')
+    for l:tempdir in split(&backupskip, '\m\s*,\s*')
       if a:path =~# glob2regpat(l:tempdir)
         return 1
       endif
