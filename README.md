@@ -11,12 +11,13 @@ If you have wished Vim would be smarter about keeping your editing state, *vim-s
 
 ### Installation
 
-1. The old way: download and source the vimball from the [releases page][releases], then run `:helptags {dir}` on your runtimepath/doc directory. Or,
-2. The plug-in manager way: using a git-based plug-in manager (Pathogen, Vundle, NeoBundle etc.), simply add `kopischke/vim-stay` to the list of plug-ins, source that and issue your manager's install command.
+1. The old way: download and source the vimball from the [releases page][releases], then run `:helptags {dir}` on your runtimepath/doc directory. Updating the plug-in via `:GetLatestVimScripts` is supported. Or,
+2. The plug-in manager way: using a git-based plug-in manager (Pathogen, Vundle, NeoBundle, Vim-Plug etc.), simply add `kopischke/vim-stay` to the list of plug-ins, source that and issue your manager's install command. Or,
+3. The Vim package way (requires Vim 7.4 with patch 1384): create a `pack/vim-stay/start/` directory in your `'packagepath'` and clone this repository into it. Run `:helptags {dir}` on the `doc` directory of the created repo. Run `:runtime plugin/stay.vim` to load *vim-stay* (or restart Vim). 
 
 ### Usage
 
-Recommended: `set viewoptions=cursor,folds,slash,unix`. Edit as usual. See the [documentation][doc] for more.
+Recommended: `set viewoptions=cursor,folds,slash,unix` (but at the very least do `set viewoptions-=options`). Edit as usual. See the [documentation][doc] for more.
 
 ### Rationale
 

@@ -1,4 +1,4 @@
-*vim-stay.txt*        For Vim version 7.0 or better          version 1.3.1
+*vim-stay.txt*        For Vim version 7.0 or better          version 1.4.0
 
 
 		VIM REFERENCE for the Stay plug-in
@@ -40,6 +40,13 @@ It is recommended to clear the 'viewdir' contents after changing this option,
 as it is only applied when creating a view session file, not when loading it.
 vim-stay provides the |:CleanViewdir| command to do that.
 
+Note that even if you would rather not change the other option flags from Vim‘s
+defaults, you absolutely should remove `options` from 'viewoptions', i.e. do
+>
+	set viewoptions-=options
+<
+as storing local options in view session files causes no end of trouble.
+
 
 IGNORED FILE TYPES:				*g:volatile_ftypes*
 
@@ -57,6 +64,17 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 >
 	let g:volatile_ftypes += ['foo', 'bar']
 <
+ERROR MESSAGING VERBOSITY:			*g:stay_verbosity*
+
+Because it is designed to work in the background of frequent Vim operations
+(buffer view changes), vim-stay will suppress most errors and only echo
+messages about important ones. You can adjust this policy by setting the
+value of this variable to
+
+	-1	echoes no messages for errors at all
+	 0	echoes messages for important errors (default)
+	 1	echoes messages for all errors
+
 ==============================================================================
 3. Commands					*vim-stay-commands*
 
@@ -68,18 +86,22 @@ you need to add file types to it, make sure the plug-in has loaded, then do
 		Note: this will ask for confirmation before deleting files.
 		Use the bang variant to bypass the confirmation prompt.
 
-:StayReload[!]	Re-source the plug-in, resetting autocommands and reloading
-		all integration modules. The bang variant will also reset
-		global configuration variables (currently, only
-		|g:volatile_ftypes|) to the plug-in defaults.
+:StayReload[!]	Load new |vim-stay-plugin-api| integrations.
+
+		The bang variant will re-load all integrations (not just new
+		ones), clear and re-define the core autocommands as well as
+		all |vim-stay-commands| and reset all global configuration
+		variables (as listed in |vim-stay-configuration|) to the plug-in
+		defaults.
 
 ==============================================================================
 4. Variables					*vim-stay-variables*
 
 
 b:stay_loaded_view
-		Full path to the view session file last loaded for the current
-		buffer by vim-stay.
+		Full path to the last view session file loaded for the current
+		buffer. This value is not vim-stay specific and will only
+		change when the loaded view file's path changes.
 
 ==============================================================================
 5. Integration					*vim-stay-integration*
@@ -95,7 +117,7 @@ Out of the box, vim-stay integrates with the following plug-ins:
 If you'd like vim-stay to integrate with other position-setting or view
 management plug-ins, open an issue or a PR at
 
-    https://github.com/kopischke/vim-stay/issues
+	https://github.com/kopischke/vim-stay/issues
 
 If the plug-in in question is one you own or contribute to, see
 |vim-stay-plugin-api| instead.
@@ -123,7 +145,7 @@ a certain file type.
 
 3. Autocommand API				*vim-stay-autocommands*
 
-vim-stray triggers two |User| autocommand events each when loading or saving
+vim-stay triggers two |User| autocommand events each when loading or saving
 state: *BufStayLoadPre* before loading a view session and *BufStayLoadPost*
 after loading it, *BufStaySavePre* before saving a view session and
 *BufStaySavePost* after.
@@ -138,9 +160,9 @@ to 3rd parties. Add a file
 containing a `stay#integrate#yourplugin#setup()` |autoload| function to your
 plug-in. Any function with that signature found in 'runtimepath' when vim-stay
 loads will be executed. You can set up autocommands in there (which will
-automatically be added to the `stay` autocommand group), optionally leveraging
-vim-stay's autocommand API (|vim-stay-autocommands|), or add to the volatile
-'filetype' list (|g:volatile_ftypes|).
+automatically be added to the `stay_integrate` autocommand group), optionally
+leveraging vim-stay's autocommand API (|vim-stay-autocommands|), or add to the
+volatile 'filetype' list (|g:volatile_ftypes|).
 
 The advantage over hard-wiring support for vim-stay in your plug-in is that
 - the integration will be set up when your user uses vim-stay regardless of
@@ -163,7 +185,15 @@ You have removed "folds" from 'viewoptions'. See the recommended setting
 under |vim-stay-viewoptions|.
 
 
-MY STATE IS NOT PERSISTED WHEN SWITCHING BETWEEN WINDOWS AND OTHER OS'
+MY BUFFER-LOCAL OPTIONS ARE NOT PERSISTED
+
+This is by design: restoring local options from view session files causes hard
+to track issues with both Vim features and other plug-ins. Because of this,
+starting from version 1.4, vim-stay will ignore the `options` flag in
+'viewoptions' when creating views.
+
+
+MY STATE IS NOT PERSISTED WHEN SWITCHING BETWEEN WINDOWS AND OTHER OSes
 
 With the default settings, 'viewoptions' uses platform specific path
 separators, which means stored view sessions are not portable. See the
@@ -177,11 +207,29 @@ local working directory. This can be a bit disorienting at first, but it is by
 (Vim's) design. If this really irks you, you may be able to work around it
 using vim-stay's autocommand API (see |vim-stay-autocommands|).
 
+For an example, see
 
-VIM-STAY MESSES UP OPTION X / BUFFER VARIABLE Y
+	https://github.com/kopischke/vim-stay/issues/10#issuecomment-83691770.
 
-You have "options" or "localoptions" set in 'viewoptions'. See the
-recommended setting under |vim-stay-viewoptions|.
+
+MY MODELINES DO NOT SEEM TO TAKE EFFECT /
+THE VIM-AIRLINE STATUSLINE IS WRONG AFTER SWITCHING BUFFERS /
+PLUG-INS ACT UP AFTER SWITCHING WINDOWS /
+VIM-STAY MESSES UP OPTION X
+
+Your 'viewoptions' include or did include the default `options` (or
+`localoptions`) flag, which means all buffer options get stored in the view
+session files created by vim-stay. Loading such a view session file has a lot
+of unpleasant side effects, hence the recommended |vim-stay-viewoptions| which
+do not include the flag.
+
+Starting from version 1.4, vim-stay temporarily removes the `options`and
+`localoptions` flag from 'viewoptions' when creating views. However, view
+session files created with the incorrect settings (either by earlier versions
+of vim-stay, or manually via |:mkview|) will only be updated when vim-stay
+re-writes them, and thus still cause issues on first load. If you would rather
+start with a fresh slate, you can wipe your 'viewdir' with |:CleanViewdir|.
+Note that you will lose all view state doing so.
 
 
 VIM-STAY TRIES TO PERSIST STATE FOR TEMPORARY FILES
@@ -204,6 +252,15 @@ and try adding it if it is not. I'd also be grateful if you reported the file
 type by opening a support issue (or even better, a PR) at
 
 	https://github.com/zhimsel/vim-stay/issues
+
+
+VIM-STAY SAYS IT CANNOT READ / WRITE THE VIEW FILE
+
+You might have opened the file triggering this with elevated privileges before
+(e.g. using `sudo` on Unix). This will result in the view session file created
+by vim-stay having elevated privileges too, thus not being writable at a lower
+privilege level. Try cleaning your 'viewdir' with a suitable OS tool operating
+at the necessary privilege level.
 
 
 MY VIEW DIRECTORY IS A FESTERING MESS

@@ -1,7 +1,8 @@
 " A LESS SIMPLISTIC TAKE ON RESTORE_VIEW.VIM
 " Maintainer: Martin Kopischke <martin@kopischke.net>
 " License:    MIT (see LICENSE.md)
-" Version:    1.3.1
+" Version:    1.4.0
+" GetLatestVimScripts: 5099  1 :AutoInstall: vim-stay
 if &compatible || !has('autocmd') || !has('mksession') || v:version < 700
   finish
 endif
@@ -9,77 +10,127 @@ endif
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
-" Plug-in defaults:
+" PLUG-IN CONFIGURATION {{{
+" Defaults:
 let s:defaults = {}
 " - bona fide file types that should never be persisted
 let s:defaults.volatile_ftypes = [
-  \ 'gitcommit', 'gitrebase', 'gitsendmail',
-  \ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
-  \ 'svn', 'cvs', 'cvsrc', 'bzr',
-  \ ]
+\ 'gitcommit', 'gitrebase', 'gitsendmail',
+\ 'hgcommit', 'hgcommitmsg', 'hgstatus', 'hglog', 'hglog-changelog', 'hglog-compact',
+\ 'svn', 'cvs', 'cvsrc', 'bzr',
+\ ]
+" - verbosity of echomsg error / status reporting
+"  -1 no messages
+"   0 important error messages (default)
+"   1 all status and error messages
+let s:defaults.stay_verbosity = 0
 
-" Loader for 3rd party integrations:
-function! s:integrate() abort
-  let s:integrations = []
-  for l:file in stay#shim#globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
-    let l:name = fnamemodify(l:file, ':t:r')
-    if index(s:integrations, l:name) is -1
-      try
-        call call('stay#integrate#'.l:name.'#setup', [])
-      catch /E117/ " no setup function found
-        continue
-      catch " integration setup execution errors
-        echomsg "Skipped vim-stay integration for" l:name "due to error:" v:errmsg
-        continue
-      endtry
-      call add(s:integrations, l:name)
-    endif
-  endfor
+" Loaded 3rd party integrations:
+let s:integrations = [] " }}}
+
+" PLUG-IN MACHINERY {{{
+" Conditionally create a view session file for {bufnr} in {winid}:
+function! s:MakeView(stage, bufnr, winid) abort
+  " do not create a view session if a call with a lower {stage} number
+  " did so recently (currently hardwired to 1 second or less ago)
+  let l:state = stay#getbufstate(a:bufnr)
+  let l:left  = get(l:state, 'left', {})
+  if a:stage > 1 && !empty(l:left) && localtime() - get(l:left, a:stage-1, 0) <= 1
+    return 0
+  endif
+
+  if pumvisible() ||
+  \ !stay#isviewwin(a:winid) ||
+  \ !stay#ispersistent(a:bufnr, g:volatile_ftypes)
+    return 0
+  endif
+
+  let l:done = stay#view#make(a:winid)
+  if l:done < g:stay_verbosity | echomsg v:errmsg | endif
+  if l:done is  1
+    let l:state.left = extend(l:left, {string(a:stage): localtime()})
+  endif
+  return l:done
+endfunction
+
+" Conditionally load view session file for {bufnr} in {winid}:
+function! s:LoadView(bufnr, winid) abort
+  if exists('g:SessionLoad') ||
+  \  pumvisible() ||
+  \ !stay#isviewwin(a:winid) ||
+  \ !stay#ispersistent(a:bufnr, g:volatile_ftypes)
+    return 0
+  endif
+
+  let l:done = stay#view#load(a:winid)
+  if l:done < g:stay_verbosity | echomsg v:errmsg | endif
+  return l:done
 endfunction
 
 " Set up global configuration, autocommands, commands:
-function! s:setup(defaults) abort
-  " - make defaults available as individual global variables,
-  "   respecting pre-set global vars unless {defaults} is 1
-  for [s:key, s:val] in items(s:defaults)
-    let g:{s:key} = a:defaults is 1 ? s:val : get(g:, s:key, s:val)
-    unlet! s:key s:val
-  endfor
+function! s:Setup(force) abort
+  " core functionality (skipped unless {force} is 1)
+  if a:force is 1
+    " - make defaults available as individual global variables
+    for [l:key, l:val] in items(s:defaults)
+      let g:{l:key} = l:val
+      unlet! l:val
+    endfor
 
-  " - 'stay' autocommand group (also used by integrations)
-  augroup stay
-    autocmd!
+    " - autocommands
+    augroup stay
+      autocmd!
+      " ensure a newly visible buffer loads its view
+      autocmd BufWinEnter ?* nested
+      \ call s:LoadView(str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+      " make sure the view is always in sync with window state
+      autocmd WinLeave    ?* nested
+      \ call s:MakeView(2, str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+      " catch hiding of buffers and quitting
+      autocmd BufWinLeave ?* nested
+      \ call s:MakeView(3, str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+      " catch saving and renaming of buffers
+      autocmd BufFilePost,BufWritePost ?* nested
+      \ call s:MakeView(1, str2nr(expand('<abuf>')), stay#win#getid(winnr()))
+    augroup END
 
-    " |v:this_session| is not set for view sessions, so we roll our own (ignored
-    " when 'viewdir' is empty or set to the current directory hierarchy, as that
-    " would catch every filed sourced from there, not just view session files)
-    autocmd SourcePre ?*
-          \ if &viewdir !~? '\v^$|^\.' && stridx(expand('<afile>'), &viewdir) is 0 |
-          \   let b:stay_loaded_view = expand('<afile>') |
-          \ endif
+    " - ex commands
+    command! -bar -bang -nargs=? CleanViewdir
+    \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
+    command! -bar -bang -nargs=0 StayReload
+    \ call <SID>Setup(expand('<bang>') is '!')
+  endif
 
-    " default buffer handling
-    autocmd BufLeave,BufWinLeave ?* nested
-          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-          \   call stay#view#make(bufwinnr(str2nr(expand('<abuf>')))) |
-          \ endif
-    autocmd BufWinEnter ?* nested
-          \ if stay#ispersistent(str2nr(expand('<abuf>')), g:volatile_ftypes) |
-          \   call stay#view#load(bufwinnr(str2nr(expand('<abuf>')))) |
-          \ endif
-
-    " generic, extensible 3rd party integration
-    call s:integrate()
+  " load 3rd party integrations (new ones only unless {force} is 1)
+  augroup stay_integrate
+    if a:force is 1
+      autocmd!
+      let s:integrations = []
+    endif
+    for l:file in stay#shim#globpath(&rtp, 'autoload/stay/integrate/*.vim', 1, 1)
+      let l:name = fnamemodify(l:file, ':t:r')
+      if index(s:integrations, l:name) is -1
+        try
+          call call('stay#integrate#'.l:name.'#setup', [])
+        catch /E117/ " no setup function found
+          if g:stay_verbosity > 0
+            echomsg "No vim-stay integration setup function found for" l:name
+          endif
+          continue
+        catch " integration setup execution errors
+          if g:stay_verbosity > -1
+            echomsg "Skipped vim-stay integration for" l:name "due to error:" v:errmsg
+          endif
+          continue
+        endtry
+        call add(s:integrations, l:name)
+      endif
+    endfor
   augroup END
+endfunction " }}}
 
-  " - ex commands
-  command! -bang -nargs=? CleanViewdir
-        \ call stay#viewdir#clean(expand('<bang>') is '!', <args>)
-  command! -bang -nargs=0 StayReload
-        \ call <SID>setup(expand('<bang>') is '!')
-endfunction
-
-call s:setup(0)
+" PLUG-IN SETUP
+call s:Setup(1)
 
 let &cpoptions = s:cpoptions
 unlet! s:cpoptions

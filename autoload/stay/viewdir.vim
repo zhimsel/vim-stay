@@ -1,5 +1,9 @@
 " AUTOLOAD FUNCTION LIBRARY FOR VIM-STAY
 " 'viewdir' handling functions
+if &compatible || v:version < 700
+  finish
+endif
+
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
@@ -13,8 +17,8 @@ function! stay#viewdir#clean(bang, ...) abort
   call filter(l:candidates, 'localtime() - getftime(v:val) > l:keepsecs')
   let l:candcount  = len(l:candidates)
   let l:delcount   = 0
-  if a:bang is 1
-\ || input("Type 'Y' to delete ".l:candcount." view session files: ") is# 'Y'
+  if a:bang is 1 ||
+  \ input("Type 'Y' to delete ".l:candcount." view session files: ") is# 'Y'
     for l:file in l:candidates
       let l:delcount += (delete(l:file) is 0)
     endfor

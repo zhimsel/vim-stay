@@ -1,42 +1,67 @@
 " AUTOLOAD FUNCTION LIBRARY FOR VIM-STAY
 " Core functions (will be loaded when first autocommand is triggered)
+if &compatible || v:version < 700
+  finish
+endif
+
 let s:cpoptions = &cpoptions
 set cpoptions&vim
 
-" Check if buffer {bufnr} is persistent:
+" Check if the buffer {bufnr} is persistent:
 " @signature:  stay#ispersistent({bufnr:Number}, {volatile_ftypes:List<String>})
 " @returns:    Boolean
 " @notes:      the persistence heuristics are
-"              - buffer must be listed
 "              - buffer name must not be empty
+"              - buffer must not be marked as ignored
+"              - buffer must be listed
 "              - buffer must be of ordinary or "acwrite" 'buftype'
-"              - not a preview window
-"              - not a diff window
 "              - buffer's 'bufhidden' must be empty or "hide"
 "              - buffer must map to a readable file
 "              - buffer must not be of a volatile file type
 "              - buffer file must not be located in a known temp dir
 function! stay#ispersistent(bufnr, volatile_ftypes) abort
-  let l:bufpath = expand('#'.a:bufnr.':p')
-  return bufexists(a:bufnr)
-    \ && !empty(l:bufpath)
-    \ && getbufvar(a:bufnr, 'stay_ignore', 0) isnot 1
-    \ && getbufvar(a:bufnr, '&buflisted') is 1
-    \ && index(['', 'acwrite'], getbufvar(a:bufnr, '&buftype')) isnot -1
-    \ && getbufvar(a:bufnr, '&previewwindow') isnot 1
-    \ && getbufvar(a:bufnr, '&diff') isnot 1
-    \ && index(['', 'hide'], getbufvar(a:bufnr, '&bufhidden')) isnot -1
-    \ && filereadable(l:bufpath)
-    \ && stay#isftype(a:bufnr, a:volatile_ftypes) isnot 1
-    \ && stay#istemp(l:bufpath) isnot 1
+  let l:bufpath = expand('#'.a:bufnr.':p') " empty on invalid buffer numbers
+  return
+  \ !empty(l:bufpath) &&
+  \ getbufvar(a:bufnr, 'stay_ignore') isnot 1 &&
+  \ getbufvar(a:bufnr, '&buflisted') is 1 &&
+  \ index(['', 'acwrite'], getbufvar(a:bufnr, '&buftype')) isnot -1 &&
+  \ index(['', 'hide'], getbufvar(a:bufnr, '&bufhidden')) isnot -1 &&
+  \ filereadable(l:bufpath) &&
+  \ stay#isftype(a:bufnr, a:volatile_ftypes) isnot 1 &&
+  \ stay#istemp(l:bufpath) isnot 1
+endfunction
+
+" Check if the window with ID {winid} is eligible for view saving:
+" @signature:  stay#isviewwin({winid:Number})
+" @returns:    Boolean
+" @notes:      a window is considered eligible when
+"              - it exists
+"              - it is not a preview window
+"              - it is not a diff window
+function! stay#isviewwin(winid) abort
+  let [l:tabnr, l:winnr] = stay#win#id2tabwin(a:winid)
+  return
+  \ l:tabnr isnot 0 &&
+  \ l:winnr isnot 0 &&
+  \ gettabwinvar(l:tabnr, l:winnr, '&previewwindow') isnot 1 &&
+  \ gettabwinvar(l:tabnr, l:winnr, '&diff') isnot 1
 endfunction
 
 " Check if {fname} is in a 'backupskip' location:
 " @signature:  stay#istemp({fname:String})
 " @returns:    Boolean
 if exists('*glob2regpat') " fastest option, Vim 7.4 with patch 668 only
+  let s:backupskip = {'option': '', 'items': []}
   function! stay#istemp(path) abort
-    for l:tempdir in split(&backupskip, '\m[^\\]\%(\\\\\)*,')
+    " cache List of option-unescaped 'backuspkip' values
+    if s:backupskip.option isnot &backupskip
+      let s:backupskip.option = &backupskip
+      let s:backupskip.items  = split(s:backupskip.option, '\v\\@<!%(\\\\)*,')
+      let s:backupskip.items  = map(s:backupskip.items,
+      \ "substitute(v:val, '\v\\@<!%(\\\\)*\\\zs[ ,]', '\\0', 'g')")
+    endif
+    for l:tempdir in s:backupskip.items
       if a:path =~# glob2regpat(l:tempdir)
         return 1
       endif
@@ -57,9 +82,9 @@ else
   " assume Vim builds without |+wildignore| are performance constrained,
   " which makes using |globpath()| filtering on 'backupskip' a non-option
   " (it's about a 100 times slower than the 'wildignore' / |expand()| hack)
-  function! stay#istemp(path) abort
+  function! stay#istemp(path) abort " @vimlint(EVL103, 1) unused argument {path}
     return -1
-  endfunction
+  endfunction " @vimlint(EVL103, 0)
 endif
 
 " Check if one of {bufnr}'s 'filetype' parts is on the {ftypes} List:
@@ -70,6 +95,18 @@ endif
 function! stay#isftype(bufnr, ftypes) abort
   let l:candidates = split(getbufvar(a:bufnr, '&filetype'), '\.')
   return !empty(filter(l:candidates, 'index(a:ftypes, v:val) isnot -1'))
+endfunction
+
+" Get the buffer state Dictionary for {bufnr}:
+" @signature:  stay#getbufstate({bufnr:Expression})
+" @returns:    Dictionary
+function! stay#getbufstate(bufnr) abort
+  let l:state = getbufvar(a:bufnr, '_stay')
+  if l:state is ''
+    unlet l:state | let l:state = {}
+    call setbufvar(a:bufnr, '_stay', l:state)
+  endif
+  return l:state
 endfunction
 
 let &cpoptions = s:cpoptions
