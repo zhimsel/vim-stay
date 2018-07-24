@@ -1,0 +1,2 @@
+# ignore vim-generated doc tags (this will clutter the local copy of this repo being used by vim)
+doc/tags
