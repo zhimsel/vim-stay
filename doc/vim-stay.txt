@@ -283,7 +283,7 @@ Vim version and platform.
 7. Credits and License			*vim-stay-credits-license*
 
 vim-stay was originally created by Martin Kopischke, http://martin.kopischke.net,
-and is now maintained by Zach Himsel.
+and is now maintained by Zach Himsel, http://zach.himsel.net.
 
 It is licensed under the terms of the MIT license according to the accompanying
 license file (LICENSE.md). It is inspired by, but not based on, `restore_view.vim`

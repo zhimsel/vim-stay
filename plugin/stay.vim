@@ -1,5 +1,5 @@
 " A LESS SIMPLISTIC TAKE ON RESTORE_VIEW.VIM
-" Maintainer: Martin Kopischke <martin@kopischke.net>
+" Maintainer: Zach Himsel <zach@himsel.net>
 " License:    MIT (see LICENSE.md)
 " Version:    1.4.0
 " GetLatestVimScripts: 5099  1 :AutoInstall: vim-stay
