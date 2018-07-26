@@ -1,4 +1,4 @@
-*vim-stay.txt*        For Vim version 7.0 or better          version 1.4.0
+*vim-stay.txt*        For Vim version 7.0 or better          version 1.4.1
 
 
 		VIM REFERENCE for the Stay plug-in
