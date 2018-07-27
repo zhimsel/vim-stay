@@ -96,12 +96,13 @@ function! stay#view#load(winid) abort
     endif
     return l:did_load_view
   catch /E484/ " failed to open view file
-    " This happens with no view file on Neovim.
-    if !has('nvim')
-      let v:errmsg  = 'vim-stay could not open the view session file! '
-      let v:errmsg .= 'Vim error '.s:exception2errmsg(v:exception)
+    let v:errmsg  = 'vim-stay could not open the view session file! '
+    let v:errmsg .= 'Vim error '.s:exception2errmsg(v:exception)
+    if has('nvim')  " neovim produces this error every time; don't return it
+      return 0
+    else
+      return -1
     endif
-    return -1
   catch /E485/ " no read access to existing view file
     let v:errmsg  = "vim-stay could not read the view session file! "
     let v:errmsg .= "Vim error ".s:exception2errmsg(v:exception)
