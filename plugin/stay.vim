@@ -1,8 +1,6 @@
 " A LESS SIMPLISTIC TAKE ON RESTORE_VIEW.VIM
 " Maintainer: Zach Himsel <zach@himsel.net>
 " License:    MIT (see LICENSE.md)
-" Version:    1.4.1
-" GetLatestVimScripts: 5099  1 :AutoInstall: vim-stay
 if &compatible || !has('autocmd') || !has('mksession') || v:version < 700
   finish
 endif
