@@ -21,7 +21,7 @@ Recommended: `set viewoptions=cursor,folds,slash,unix` (but at the very least do
 
 ### Rationale
 
-Keeping editing session state should be a given in an editor; unluckily, Vim's solution for this, *view sessions*, are not easily automated [without encountering painful bumps][mkview-wikia]. As the one plug-in available that aimed to fix this, Zhou Yi Chao’s [*restore_view.vim*][chao-plugin], limited itself to Vim editing sessions, didn’t play well with other position setting plug-ins like [vim-fetch][vim-fetch] and as there were [some issues with its heuristics][heuristics], *vim-fetch* was born.
+Keeping editing session state should be a given in an editor; unluckily, Vim's solution for this, *view sessions*, are not easily automated [without encountering painful bumps][mkview-wikia]. As the one plug-in available that aimed to fix this, Zhou Yi Chao’s [*restore_view.vim*][chao-plugin], limited itself to Vim editing sessions, didn’t play well with other position setting plug-ins like [vim-fetch][vim-fetch] and as there were [some issues with its heuristics][heuristics], *vim-stay* was born.
 
 ### License
 
