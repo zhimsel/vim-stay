@@ -79,11 +79,8 @@ function! s:Setup(force) abort
     augroup stay
       autocmd!
       " ensure a newly visible buffer loads its view
-      autocmd BufWinEnter ?* nested
+      autocmd BufReadPost ?* nested
       \ call s:LoadView(str2nr(expand('<abuf>')), stay#win#getid(winnr()))
-      " make sure the view is always in sync with window state
-      autocmd WinLeave    ?* nested
-      \ call s:MakeView(2, str2nr(expand('<abuf>')), stay#win#getid(winnr()))
       " catch hiding of buffers and quitting
       autocmd BufWinLeave ?* nested
       \ call s:MakeView(3, str2nr(expand('<abuf>')), stay#win#getid(winnr()))
