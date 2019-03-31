@@ -27,6 +27,14 @@ let s:defaults.stay_verbosity = 0
 let s:integrations = [] " }}}
 
 " PLUG-IN MACHINERY {{{
+" Echo v:errmsg if {level} is below g:stay_verbosity.
+" Makes sure we do not echo messages that are not vim-stay errors:
+function! s:HandleErrMsg(level) abort
+  if a:level < min([1, g:stay_verbosity])
+    echomsg v:errmsg
+  endif
+endfunction
+
 " Conditionally create a view session file for {bufnr} in {winid}:
 function! s:MakeView(stage, bufnr, winid) abort
   " do not create a view session if a call with a lower {stage} number
@@ -44,7 +52,7 @@ function! s:MakeView(stage, bufnr, winid) abort
   endif
 
   let l:done = stay#view#make(a:winid)
-  if l:done < g:stay_verbosity | echomsg v:errmsg | endif
+  call s:HandleErrMsg(l:done)
   if l:done is  1
     let l:state.left = extend(l:left, {string(a:stage): localtime()})
   endif
@@ -61,7 +69,7 @@ function! s:LoadView(bufnr, winid) abort
   endif
 
   let l:done = stay#view#load(a:winid)
-  if l:done < g:stay_verbosity | echomsg v:errmsg | endif
+  call s:HandleErrMsg(l:done)
   return l:done
 endfunction
 
@@ -111,14 +119,12 @@ function! s:Setup(force) abort
         try
           call call('stay#integrate#'.l:name.'#setup', [])
         catch /E117/ " no setup function found
-          if g:stay_verbosity > 0
-            echomsg "No vim-stay integration setup function found for" l:name
-          endif
+          let v:errmsg = "No vim-stay integration setup function found for ".l:name
+          call s:HandleErrMsg(0)
           continue
         catch " integration setup execution errors
-          if g:stay_verbosity > -1
-            echomsg "Skipped vim-stay integration for" l:name "due to error:" v:errmsg
-          endif
+          let v:errmsg = "Skipped vim-stay integration for ".l:name." due to error: ".v:errmsg
+          call s:HandleErrMsg(-1)
           continue
         endtry
         call add(s:integrations, l:name)
