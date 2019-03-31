@@ -69,14 +69,19 @@ function! stay#view#load(winid) abort
       unlet b:stay_loaded_view
     endif
 
-    " cache 'viewdir' value, accounting for misformatted directory specification
+    " cache 'viewdir' value and normalise its directory path
     if s:viewdir.option isnot &viewdir
       let s:viewdir.option = &viewdir
-      let s:viewdir.path   = substitute(s:viewdir.option, '\v[/\\]*$', s:slash(), '')
+      " Windows path backslashes will not work in autocommands and need to be replaced by
+      " slashes; also Windows paths set in Vim options may contain both slashes and backslashes,
+      " so we need to give them the foward slash treatment too to normalise misformatted options
+      let l:slashes = exists('+shellslash') ? '[/\\]' : '/'
+      let s:viewdir.path = substitute(&viewdir, '\v'.l:slashes.'+', '/', 'g')
     endif
 
     " catch sourcing of the view file with a one-off SourcePre autocommand
-    let l:pattern = s:viewdir.path.'*'.fnamemodify(bufname('%'), ':t').'*'
+    let l:buftail = fnamemodify(bufname('%'), ':t')
+    let l:pattern = fnameescape(s:viewdir.path).'*'.fnameescape(l:buftail).'*'
     execute 'autocmd SourcePre' l:pattern
     \ 'let b:stay_loaded_view = expand(''<sfile>'') | autocmd! SourcePre' l:pattern
     silent loadview
@@ -136,17 +141,6 @@ function! s:doautocmd(event, ...) abort
     execute 'doautocmd <nomodeline>' join(l:event, ' ')
   endif
 endfunction
-
-" - get the path separator character
-if exists('+shellslash')
-  function! s:slash() abort
-    return &shellslash ? '/' : '\'
-  endfunction
-else " MacOS can use slashes from Vim 7 on, see |mac-filename|
-  function! s:slash() abort
-    return '/'
-  endfunction
-endif
 
 " - activate a window ID without leaving a trail
 function! s:sneak2winid(id) abort
