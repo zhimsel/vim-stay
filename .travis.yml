@@ -1,14 +1,19 @@
-language: minimal
+language: ruby
+
+rvm:
+  - 2.2
 
 # do a shallow-clone of vim-stay
 git:
   depth: 1
 
-# install vimlint
-before_script:
+# install tools
+install:
+  - gem install mdl
   - git clone --depth 1 https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
   - git clone --depth 1 https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
 
-# run linter
+# run linters
 script:
+  - mdl README.md
   - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v autoload plugin
