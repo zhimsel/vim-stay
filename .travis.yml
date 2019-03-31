@@ -15,5 +15,5 @@ install:
 
 # run linters
 script:
-  - mdl README.md
+  - mdl --git-recurse .
   - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v autoload plugin
