@@ -1,0 +1,14 @@
+language: minimal
+
+# do a shallow-clone of vim-stay
+git:
+  depth: 1
+
+# install vimlint
+before_script:
+  - git clone --depth 1 https://github.com/syngan/vim-vimlint /tmp/vim-vimlint
+  - git clone --depth 1 https://github.com/ynkdir/vim-vimlparser /tmp/vim-vimlparser
+
+# run linter
+script:
+  - sh /tmp/vim-vimlint/bin/vimlint.sh -l /tmp/vim-vimlint -p /tmp/vim-vimlparser -v autoload plugin

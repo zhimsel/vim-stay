@@ -2,6 +2,7 @@
 [![Current release][badge-release]][releases]
 [![Open issues][badge-issues]][issues]
 [![License][badge-license]][license]
+[![Build Status][badge-build]][travis]
 
 ## Stay at my cursor, boy!
 
@@ -31,6 +32,8 @@ Keeping editing session state should be a given in an editor; unluckily, Vim's s
 [badge-release]: http://img.shields.io/github/release/zhimsel/vim-stay.svg?style=flat-square
 [badge-issues]:  http://img.shields.io/github/issues/zhimsel/vim-stay.svg?style=flat-square
 [badge-license]: http://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+[badge-build]:   https://travis-ci.org/zhimsel/vim-stay.svg?branch=master
+[travis]:        https://travis-ci.org/zhimsel/vim-stay
 [chao-plugin]:   http://www.vim.org/scripts/script.php?script_id=4021
 [doc]:           doc/vim-stay.txt
 [heuristics]:    https://github.com/zhimsel/vim-stay/issues/2
