@@ -18,11 +18,12 @@ function! stay#viewdir#clean(bang, ...) abort
   let l:candcount  = len(l:candidates)
   let l:delcount   = 0
   if a:bang is 1 ||
-  \ input("Type 'y' to delete ".l:candcount." view session files: ") is? 'y'
+  \ input("Delete ".l:candcount." view session files? (y/n): ") is? 'y'
     for l:file in l:candidates
       let l:delcount += (delete(l:file) is 0)
     endfor
   endif
+  echo "\nDeleted ".l:delcount." files."
   return [l:candcount, l:delcount]
 endfunction
 
