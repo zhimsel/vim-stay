@@ -1,0 +1,25 @@
+name: Lint code
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  mdl:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actionshub/markdownlint@main
+        name: Lint markdown files
+
+  vimlint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: vimlint
+        uses: tsuyoshicho/action-vimlint@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          target: autoload plugin
+          fail_on_error: true
+          reporter: github-check
